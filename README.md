@@ -31,6 +31,8 @@ Screenshots
 ![BitPurse Screenshot 2][5]  
 ![BitPurse Screenshot 3][6]  
 ![BitPurse Screenshot 4][10]  
+![BitPurse Screenshot 5][16]  
+![BitPurse Screenshot 6][17]  
 
 Licence
 ---------
@@ -50,3 +52,6 @@ Licenced under GPLv3.
 [13]:http://repo.pub.meego.com/home:/khertan/Harmattan/armel/
 [14]:http://store.ovi.com/content/320976
 [15]:http://khertan.net/medias/bitpurse_qrcode.png
+[16]:http://khertan.net/medias/bitpurse_screenshot_5.png
+[17]:http://khertan.net/medias/bitpurse_screenshot_6.png
+

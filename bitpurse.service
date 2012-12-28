@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=net.khertan.bitpurse
+Exec=/opt/bitpurse/__init__.py
+

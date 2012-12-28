@@ -26,7 +26,7 @@ for root, dirs, filenames in os.walk(os.path.join(os.path.dirname(__file__),
 print files
 
 setup(name='bitpurse',
-      version='0.9.0',
+      version='0.9.1',
       license='GNU GPLv3',
       description='A nice looking Blockchain.info Bitcoin Wallet Client',
       long_description=("A nice looking Blockchain.info Bitcoin Wallet client"
@@ -36,7 +36,7 @@ setup(name='bitpurse',
       maintainer=u'Benoît HERVIER',
       maintainer_email='khertan@khertan.net',
       url='http://www.khertan.net/BitPurse',
-      requires=['python', 'pyside'],
+      requires=['python', 'pyside', 'pycrypto'],
 
 
       data_files=[('/usr/share/dbus-1/services', ['bitpurse.service']),

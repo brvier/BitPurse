@@ -25,9 +25,10 @@ import os.path
 
 __author__ = 'Benoit HERVIER (Khertan)'
 __email__ = 'khertan@khertan.net'
-__version__ = '0.9'
+__version__ = '0.9.1'
 __build__ = '1'
-__upgrade__ = '''0.9: First beta release
+__upgrade__ = '''0.9.0: First beta release
+0.9.1: Second beta release, add missing python-crypto dependancy
 '''
 
 

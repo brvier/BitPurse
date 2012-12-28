@@ -31,7 +31,7 @@ if __name__ == "__main__":
         pass
     p = pypackager.PyPackager("bitpurse")
     p.display_name = 'BitPurse'
-    p.version = __version__ + '.0'
+    p.version = __version__
     p.buildversion = __build__
     p.summary = 'A nice looking Blockchain.info Bitcoin Wallet Client'
     p.description = ("A nice looking Blockchain.info Bitcoin Wallet Client "
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     p.email = __mail__
     p.depends = "python, python-pyside.qtgui, python-pyside.qtdeclarative," \
         + " python-pyside.qtcore, python-pyside.qtopengl"
-    p.rpm_depends = "python, python-pyside"
+    p.rpm_depends = "python, python-pyside, python-crypto"
     p.suggests = ""
     p.section = "user/office"
     p.arch = "all"

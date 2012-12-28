@@ -1,5 +1,5 @@
 Name: bitpurse
-Version: 0.9.0
+Version: 0.9.1
 Release: 1
 Summary: A note taking application with ownCloud sync
 Group: office
@@ -10,7 +10,7 @@ Source0: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root-%(%{__id_u} -n)
 BuildArch: noarch
 BuildRequires: python-devel
-Requires: python, python-pyside
+Requires: python, python-pyside, python-crypto
 
 %description
 A nice looking Blockchain.info Bitcoin Wallet Client for MeeGo, SailfishOS, NemoMobile, and Harmattan.

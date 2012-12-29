@@ -41,7 +41,7 @@ if __name__ == "__main__":
     p.maintainer = __author__
     p.email = __mail__
     p.depends = "python, python-pyside.qtgui, python-pyside.qtdeclarative," \
-        + " python-pyside.qtcore, python-pyside.qtopengl"
+        + " python-pyside.qtcore, python-pyside.qtopengl, python-crypto"
     p.rpm_depends = "python, python-pyside, python-crypto"
     p.suggests = ""
     p.section = "user/office"

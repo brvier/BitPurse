@@ -61,13 +61,13 @@ class Wallet(object):
     def getRemoteWallet(self, guid, key):
         self.guid = guid
         self.key = key
-        req = urllib2.Request('https://blockchain.info/wallet/wallet.aes.json'
-                              + '?guid=%s&sharedKey=%s' %
-                              (self.guid, self.sharedKey),
+        req = urllib2.Request('https://blockchain.info/wallet/'
+                              + '%s?format=json&resend_code=false' %
+                              self.guid,
                               None, {'user-agent': 'KhtBitcoin'})
         opener = urllib2.build_opener()
         fh = opener.open(req)
-        encryptedWallet = fh.read()
+        encryptedWallet = json.loads(fh.read())['payload']
 
         #cipherdata = encryptedWallet.decode('base64', 'strict')
         #key = PBKDF2(self.key, cipherdata[:16], iterations=10).read(32)

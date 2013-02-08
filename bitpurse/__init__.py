@@ -25,11 +25,12 @@ import os.path
 
 __author__ = 'Benoit HERVIER (Khertan)'
 __email__ = 'khertan@khertan.net'
-__version__ = '0.9.2'
-__build__ = '2'
+__version__ = '0.9.3'
+__build__ = '1'
 __upgrade__ = '''0.9.0: First beta release
 0.9.1: Second beta release, add missing python-crypto dependancy
 0.9.2: Second beta release, add missing python-crypto dependancy for deb
+0.9.3: Follow the Blockchain.info MyWallet API changes
 '''
 
 

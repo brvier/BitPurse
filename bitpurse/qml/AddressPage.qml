@@ -76,7 +76,6 @@ Page {
             id:transactionsView
             clip: true
             model: TransactionsModel
-            highlightRangeMode: ListView.StrictlyEnforceRange
             anchors.fill: parent
             anchors {
                 leftMargin: 1
@@ -114,14 +113,14 @@ Page {
                         Label {
                             anchors.right:parent.right
                             anchors.left:parent.left
-                            text:model.address
+                            text:address
                             font.family: "Nokia Pure Text"
                             font.pixelSize: 18
                             color:"black"
                         }
 
                         Label {
-                            text:model.date + (model.confirmations < 100 ? ' - Unconfirmed' : '')
+                            text:date + (confirmations < 100 ? ' - Unconfirmed' : '')
                             font.pixelSize: 16
                             color: "#666666"
                             anchors.right:parent.right
@@ -129,10 +128,10 @@ Page {
 
                             Label {
                                 id: transactionAmount
-                                text: model.amount
+                                text: amount
                                 anchors.right: parent.right
                                 anchors.verticalCenter: parent.verticalCenter
-                                color: model.confirmations < 100 ? 'red' : (model.amount > 0 ? 'green' : 'purple')
+                                color: confirmations < 100 ? 'red' : (amount > 0 ? 'green' : 'purple')
                             }
                         }
 

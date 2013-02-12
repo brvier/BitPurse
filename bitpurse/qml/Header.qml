@@ -38,8 +38,8 @@ Rectangle {
     BusyIndicator {
         id: busyindicatorsmall
         platformStyle: BusyIndicatorStyle { size: "medium"; spinnerFrames: "image://theme/spinnerinverted"}
-        running: WalletController.busy ? true : false;
         opacity: WalletController.busy ? 1.0 : 0.0;
+        running: opacity == 1.0 ? true : false;
         anchors.right: header.right
         anchors.rightMargin: 10
         anchors.verticalCenter: header.verticalCenter

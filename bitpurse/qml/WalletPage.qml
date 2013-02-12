@@ -56,7 +56,6 @@ Page {
             id: adressesView
             clip: true
             model: AddressesModel
-            highlightRangeMode: ListView.StrictlyEnforceRange
             anchors.fill: parent
             anchors {
                 leftMargin: 1
@@ -96,14 +95,14 @@ Page {
                         Label {
                             anchors.right:parent.right
                             anchors.left:parent.left
-                            text:model.address
+                            text:address
                             font.family: "Nokia Pure Text"
                             font.pixelSize: 18
                             color:"black"
                         }
 
                         Label {
-                            text:model.label
+                            text:label
                             font.pixelSize: 16
                             color: "#666666"
                             anchors.right:parent.right
@@ -111,7 +110,7 @@ Page {
 
                             Label {
                                 id: transactionAmount
-                                text: model.prettyBalance
+                                text: prettyBalance
                                 anchors.right: parent.right
                                 anchors.verticalCenter: parent.verticalCenter
                                 color: 'green'
@@ -126,11 +125,10 @@ Page {
                         onReleased: background.opacity = 0.0;
                         onPositionChanged: background.opacity = 0.0;
                         onClicked: {
-                            console.log('Go to AddressPage :' + model.address)
-                            WalletController.setCurrentAddress(model.address)
-                            changePage(
-                                        Qt.createComponent(
-                                            Qt.resolvedUrl("AddressPage.qml")));
+                            console.log('Go to AddressPage :' + address)
+                            WalletController.setCurrentAddress(address)
+                            changePage(addressPage);
+                            WalletController.update();
                         }
                     }
                 }

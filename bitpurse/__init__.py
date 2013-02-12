@@ -75,6 +75,7 @@ class BitPurse(QApplication):
                                             .transactionsModel)
         self.rootContext.setContextProperty('Settings',
                                             self.settings)
+        
         self.view.setSource(QUrl.fromLocalFile(
             os.path.join(os.path.dirname(__file__),
                          'qml', 'main.qml')))

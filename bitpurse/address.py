@@ -62,7 +62,8 @@ class Address(object):
 
         try:
             for tx in jsondict['txs']:
-                self.transactions.append(TransactionHist(tx['hash'], tx['date'],
+                self.transactions.append(TransactionHist(tx['hash'],
+                                                         tx['date'],
                                                          tx['address'],
                                                          tx['amount'],
                                                          tx['confirmations']))
@@ -81,7 +82,8 @@ class Address(object):
                          'date': tx.date,
                          'amount': tx.amount,
                          'address': tx.address,
-                         'confirmations': tx.confirmations} for tx in self.transactions],
+                         'confirmations': tx.confirmations}
+                        for tx in self.transactions],
                 }
 
 
@@ -89,21 +91,17 @@ class AddressesModel(QAbstractListModel):
     COLUMNS = ('label', 'address', 'balance', 'index', 'prettyBalance')
 
     def __init__(self, ):
-        self._addresses = {}
+        self._addresses = []
         QAbstractListModel.__init__(self)
         self.setRoleNames(dict(enumerate(AddressesModel.COLUMNS)))
 
-    def clearData(self, ):
-        self._addresses = {}
-
     def setData(self, data):
         self.beginResetModel()
-        self._addresses = data
+        self._addresses[:] = data
         self.endResetModel()
 
     def rowCount(self, parent=QModelIndex()):
         return len(self._addresses)
-
 
     def data(self, index, role):
         if index.isValid() and role == AddressesModel.COLUMNS.index('label'):
@@ -131,12 +129,9 @@ class TransactionsModel(QAbstractListModel):
         QAbstractListModel.__init__(self)
         self.setRoleNames(dict(enumerate(TransactionsModel.COLUMNS)))
 
-    def resetData(self, ):
-        self._transactions = []
-
     def setData(self, transactions):
         self.beginResetModel()
-        self._transactions = transactions
+        self._transactions[:] = transactions
         self.endResetModel()
 
     def rowCount(self, parent=QModelIndex()):
@@ -163,5 +158,5 @@ class TransactionHist(object):
         self.hash = txhash
         self.date = date
         self.address = address
-        self.amount = amount    
-        self.confirmations = confirmations   
+        self.amount = amount
+        self.confirmations = confirmations

@@ -18,8 +18,7 @@ from utils import \
     is_valid, int_to_hex, bc_address_to_hash_160, var_int, \
     getDataFromChainblock, Hash, \
     SECP256k1, \
-    filter, \
-    b58encode
+    filter
 
 import urllib
 import urllib2

@@ -33,10 +33,10 @@ PageStackWindow {
         objectName: 'walletPage'
     }
 
-    /*AddressPage {
+    AddressPage {
         id: addressPage
         objectName: 'addressPage'
-    }*/
+    }
 
     SendPage {
         id: sendPage
@@ -55,7 +55,7 @@ PageStackWindow {
 
         ToolIcon {
             platformIconId: "toolbar-home"
-            onClicked: {changePage(walletPage);}
+            onClicked: {changePage(walletPage); WalletController.update();}
         }
 
         ToolIcon {

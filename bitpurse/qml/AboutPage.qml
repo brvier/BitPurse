@@ -89,7 +89,7 @@ Page {
                     width: 350; height: 50
                     text: qsTr("Donate")
                     onClicked: { WalletController.sendFromCurrent(
-                        '17WQkTBcmJwzK8YYK8QhfisNeezQhNCbFy',
+                        '1H1QjfoANoATk1yAsCHmqbPChmQtogPpvv',
                         donateField.text,
                         '0.0005',
                         donatePassword.text);

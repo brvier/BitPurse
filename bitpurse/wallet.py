@@ -14,7 +14,7 @@
 ## GNU General Public License for more details.
 
 from PySide.QtCore import Slot, QObject, \
-    QModelIndex, Signal, Property
+    Signal, Property
 import urllib2
 import json
 from PBKDF2 import PBKDF2
@@ -89,15 +89,15 @@ class Wallet(object):
         for idx, address in enumerate(self.addresses):
             if address.addr == addr:
                 return idx
-        return -1  
+        return -1
 
     def encrypt(self, key, cipherdata):
         iv = os.urandom(16)
         cipherdata = padding(cipherdata)
         key = PBKDF2(key, iv, iterations=10).read(32)
-        
+
         cipher = AES.new(key, AES.MODE_CBC, iv)
-        return iv+cipher.encrypt(cipherdata)
+        return iv + cipher.encrypt(cipherdata)
 
     def decrypt(self, key, cipherdata):
         ''' Decrypt an wallet encrypted with a PBKDF2 Key with AES'''
@@ -165,8 +165,8 @@ class Wallet(object):
                     address['tag'] = 0
 
                 if isDoubleEncrypted:
-                #    address['tag'] = self.decryptPK(address['tag'], skey, sharedKey)
-                    address['priv'] = self.decryptPK(address['priv'], skey, sharedKey)
+                    address['priv'] = self.decryptPK(address['priv'],
+                                                     skey, sharedKey)
                     address['doubleEncrypted'] = False
                 self.addresses.append(Address(jsondict=address))
 
@@ -174,7 +174,6 @@ class Wallet(object):
         self.store(passKey)
 
     def addTransactionHistForAddress(self, addr, transaction):
-        print 'Adding transaction hash:', transaction.hash
         for address in self.addresses:
             if addr == address.addr:
                 for tx in address.transactions:
@@ -241,7 +240,6 @@ class Wallet(object):
                '|'.join(self.getArchivedAddrAddresses())))
         #print req
         data = getDataFromChainblock(req)
-        print data
 
         try:
             self.balance = data['wallet']['final_balance']
@@ -266,7 +264,9 @@ class Wallet(object):
                     txDst = []
                     confirmations = 0
                     if 'block_height' in tx:
-                        confirmations = data['info']['latest_block']['height'] - tx['block_height'] + 1
+                        confirmations = \
+                            data['info']['latest_block']['height'] \
+                            - tx['block_height'] + 1
                     for txout in tx['out']:
                         if self.isMine(txout['addr']):
                             if not txout['addr'] in txAddresses:
@@ -284,7 +284,6 @@ class Wallet(object):
                             txDst.append(txin['prev_out']['addr'])
 
                     for txAddress in txAddresses:
-                        print txAddress
                         self.addTransactionHistForAddress(
                             txAddress,
                             TransactionHist(
@@ -332,6 +331,8 @@ class WalletController(QObject):
         self._walletUnlocked = False
         self.settings = Settings()
         self.addressesModel = AddressesModel()
+        self.transactionsModel = TransactionsModel()
+
         if self.settings.storePassKey:
             self._currentPassKey = self.settings.passKey
             try:
@@ -340,15 +341,14 @@ class WalletController(QObject):
                 self.onError.emit('Stored pass phrase is invalid')
         else:
             self._currentPassKey = None
-        self.transactionsModel = TransactionsModel()
         self._balance = '<b>0.00</b>000000'
         self._currentAddressIndex = 0
 
     @Slot(result=bool)
     def walletExists(self,):
         if not os.path.exists(os.path.join(
-            os.path.expanduser('~'),
-            '.bitpurse.wallet')):
+                os.path.expanduser('~'),
+                '.bitpurse.wallet')):
             return False
         return True
 
@@ -387,7 +387,8 @@ class WalletController(QObject):
 
     def getCurrentDoubleEncrypted(self):
         try:
-            return self._wallet.addresses[self._currentAddressIndex].doubleEncrypted
+            return self._wallet.addresses[self._currentAddressIndex] \
+                .doubleEncrypted
         except IndexError:
             return False
 
@@ -416,7 +417,8 @@ class WalletController(QObject):
     def _importFromBlockchainInfoWallet(self, guid, key, skey):
         self.onBusy.emit()
         try:
-            self._wallet.importFromBlockchainInfoWallet(self._currentPassKey, guid, key, skey)
+            self._wallet.importFromBlockchainInfoWallet(self._currentPassKey,
+                                                        guid, key, skey)
             self._update()
         except Exception, err:
             print err
@@ -458,7 +460,7 @@ class WalletController(QObject):
             self.onTxSent.emit(False)
         self.onBusy.emit()
 
-    @Slot(unicode,result=bool)
+    @Slot(unicode, result=bool)
     def unlockWallet(self, passKey):
         try:
             self.setCurrentPassKey(passKey)
@@ -466,7 +468,7 @@ class WalletController(QObject):
             self._walletUnlocked = True
             self.addressesModel.setData(self._wallet.getActiveAddresses())
 
-        except Exception, err:            
+        except Exception, err:
             self.onError.emit(unicode(err))
             import traceback
             traceback.print_exc()
@@ -490,7 +492,9 @@ class WalletController(QObject):
             #print self._wallet.getActiveAddresses()
             self.addressesModel.setData(self._wallet.getActiveAddresses())
             try:
-                self.transactionsModel.setData(self._wallet.addresses[self._currentAddressIndex].transactions)
+                self.transactionsModel.setData(
+                    self._wallet.addresses[self._currentAddressIndex]
+                    .transactions)
             except IndexError:
                 print 'index error loading transactions model'
             #self.onDoubleEncrypted.emit()
@@ -510,7 +514,9 @@ class WalletController(QObject):
             self.onCurrentLabel.emit()
             self.onCurrentAddress.emit()
             try:
-                self.transactionsModel.setData(self._wallet.addresses[self._currentAddressIndex].transactions)
+                self.transactionsModel.setData(
+                    self._wallet.addresses[self._currentAddressIndex]
+                    .transactions)
             except IndexError:
                 print 'index error loading transactions model'
 
@@ -532,7 +538,7 @@ class WalletController(QObject):
     busy = Property(bool, isBusy,
                     notify=onBusy)
     walletUnlocked = Property(bool, getWalletUnlocked,
-                    notify=onWalletUnlocked)
+                              notify=onWalletUnlocked)
     balance = Property(unicode, getBalance, notify=onBalance)
     currentBalance = Property(unicode,
                               getCurrentBalance,
@@ -546,4 +552,4 @@ class WalletController(QObject):
     currentPassKey = Property(unicode,
                               getCurrentPassKey,
                               setCurrentPassKey,
-                              notify=onCurrentPassKey)                   
+                              notify=onCurrentPassKey)

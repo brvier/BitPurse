@@ -5,33 +5,38 @@ import com.nokia.extras 1.1
 PageStackWindow {
     id: appWindow
 
-    initialPage: loginPage
+    initialPage: WalletController.walletExists() ? ((WalletController.walletUnlocked) ? walletPage : loginPage) : welcomePage
     
     function changePage(page) {
         if (pageStack.currentPage.objectName !== page.objectName) {
-                                 	pageStack.replace(page);
-                                 }
-       }
+            pageStack.replace(page);
+        }
+    }
 
     LoginPage {
         id: loginPage
         objectName: 'loginPage'
     }
 
-    AboutPage {
-        id: aboutPage
-        objectName: 'aboutPage'
-    }
-    
-    AddressesPage {
-        id: addressesPage
-        objectName: 'addressesPage'
+    WelcomePage {
+        id: welcomePage
+        objectName: 'welcomePage'
     }
 
-    AddressPage {
+    /*AboutPage {
+        id: aboutPage
+        objectName: 'aboutPage'
+    }*/
+    
+    WalletPage {
+        id: walletPage
+        objectName: 'walletPage'
+    }
+
+    /*AddressPage {
         id: addressPage
         objectName: 'addressPage'
-    }
+    }*/
 
     SendPage {
         id: sendPage
@@ -39,10 +44,10 @@ PageStackWindow {
     }
 
 
-    RequestPage {
+    /*RequestPage {
         id: requestPage
         objectName: 'requestPage'
-    }
+    }*/
 
     ToolBarLayout {
         id: mainTools
@@ -50,7 +55,7 @@ PageStackWindow {
 
         ToolIcon {
             platformIconId: "toolbar-home"
-            onClicked: {changePage(addressesPage);}
+            onClicked: {changePage(walletPage);}
         }
 
         ToolIcon {
@@ -70,7 +75,7 @@ PageStackWindow {
     }
 
     ToolBarLayout {
-        id: addressesTools
+        id: walletTools
         visible: false
 
         //Create new address : planned for futur release
@@ -116,23 +121,28 @@ PageStackWindow {
         id: mainMenu
         visualParent: pageStack
         MenuLayout {
-            MenuItem { text: qsTr("About"); onClicked: pageStack.push(aboutPage);}
-            MenuItem { text: qsTr("Preferences"); onClicked: {
-                        pageStack.push(Qt.createComponent(Qt.resolvedUrl("SettingsPage.qml"))); }
-                        }
-                        
-            MenuItem { text: qsTr("Report a bug");onClicked: {
+            MenuItem { text: qsTr("About");
+                onClicked: pageStack.push(
+                               Qt.createComponent(
+                                   Qt.resolvedUrl("AboutPage.qml")));
+            }
+            MenuItem { text: qsTr("Preferences");
+                onClicked: {
+                    pageStack.push(
+                                Qt.createComponent(
+                                    Qt.resolvedUrl("SettingsPage.qml"))); }
+            }
+
+            MenuItem { text: qsTr("Report a bug");
+                onClicked: {
                     Qt.openUrlExternally('https://github.com/khertan/KhtBitCoin/issues/new');
                 }
             }
             MenuItem { text: qsTr('LogOut'); onClicked: {
-                Settings.login = '';
-                Settings.password = '';
-                changePage(loginPage);
+                    WalletController.currentPassKey = '';
+                    changePage(loginPage);
                 }
             }
-
-
         }
     }
 
@@ -151,4 +161,21 @@ PageStackWindow {
         anchors.horizontalCenter: parent.horizontalCenter
     }
 
-}
+    //State used to detect when we should refresh view
+    states: [
+        State {
+            name: "fullsize-visible"
+            when: platformWindow.viewMode === WindowState.Fullsize && platformWindow.visible
+            StateChangeScript {
+                script: {
+                    if ((pageStack.currentPage.objectName === 'walletPage') && (! WalletController.busy)) {
+                        WalletController.update();
+                    }
+                    if ((pageStack.currentPage.objectName === 'addressPage') && (! WalletController.busy)) {
+                        WalletController.update();
+                    }
+                }
+            }
+        }
+    ]
+}  

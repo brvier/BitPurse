@@ -37,37 +37,89 @@ Page {
             }
 
             Label {
-                text: qsTr("Save login")
+                text: qsTr("Store wallet key")
                 width: parent.width
-                height: saveLoginSwitch.height
+                height: storePassKeySwitch.height
                 verticalAlignment: Text.AlignVCenter
                 Switch {
-                    id: saveLoginSwitch
+                    id: storePassKeySwitch
                     anchors.right: parent.right
-                    checked: Settings.saveLogin
+                    checked: Settings.storePassKey
                     Binding {
                         target: Settings
-                        property: "saveLogin"
-                        value: saveLoginSwitch.checked
+                        property: "storePassKey"
+                        value: storePassKeySwitch.checked
                     }
                 }
             }
             Label {
-                text: qsTr("Save password")
+                text: qsTr("Use double encryption")
                 width: parent.width
-                height: savePasswordSwitch.height
+                height: useDoubleEncryptionSwitch.height
                 verticalAlignment: Text.AlignVCenter
                 Switch {
-                    id: savePasswordSwitch
+                    id: useDoubleEncryptionSwitch
                     anchors.right: parent.right
-                    checked: Settings.savePassword
+                    checked: Settings.useDoubleEncryption
                     Binding {
                         target: Settings
-                        property: "savePassword"
-                        value: savePasswordSwitch.checked
+                        property: "useDoubleEncryption"
+                        value: useDoubleEncryptionSwitch.checked
                     }
                 }
             }
+            
+            TitleLabel {
+                text: qsTr("Blockchain.info MyWallet")
+            }
+            
+            TextField {
+                id: blockchainGuid
+                placeholderText: qsTr("GUID")
+                width: parent.width
+            }
+            TextField {
+                id: blockchainKey
+                placeholderText: qsTr("Main Key")
+                echoMode: TextInput.Password
+                width: parent.width
+            }
+            TextField {
+                id: blockchainSecondKey
+                placeholderText: qsTr("Second Key")
+                echoMode: TextInput.Password
+                width: parent.width
+            }
+            Button {
+                text: qsTr('Import')
+                anchors.horizontalCenter: parent.horizontalCenter
+                onClicked: {
+                    WalletController.importFromBlockchainInfoWallet(
+                                blockchainGuid.text,
+                                blockchainKey.text,
+                                blockchainSecondKey.text);
+                }
+            }
+
+            TitleLabel {
+                text: qsTr("Import from private key")
+            }
+
+            TextField {
+                id: privateKey
+                placeholderText: qsTr("Private Key")
+                echoMode: TextInput.Password
+                width: parent.width
+            }
+
+            Button {
+                text: qsTr('Import')
+                anchors.horizontalCenter: parent.horizontalCenter
+                onClicked: {
+                    WalletController.importFromPrivateKey(privateKey.text);
+                }
+            }
+
         }
     }
 
@@ -76,6 +128,4 @@ Page {
         platformStyle: ScrollDecoratorStyle {
         }}
 
-}
-
-
+}  

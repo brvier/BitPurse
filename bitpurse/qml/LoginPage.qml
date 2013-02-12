@@ -5,20 +5,9 @@ Page {
 
     tools: simpleTools
 
-   function onConnected(connected) {
-        if (connected)
-            pageStack.replace(addressesPage);
-        busyindicatorLogin.running = false;
-    }
-
     Flickable {
         contentHeight: container.height + 10
         anchors.fill: parent
-        /*anchors {
-            right: parent.right
-            left: parent.left
-            verticalCenter: parent.verticalCenter
-        }*/
 
     Column {
         id: container
@@ -48,19 +37,10 @@ Page {
             }
         TextField {
             id:loginField
-            placeholderText: qsTr('Login')
-            text:Settings.saveLogin ? Settings.login : ''
+            placeholderText: qsTr('Enter your pass phrase')
+            text: WalletController.currentPassKey
             anchors.right: parent.right
             anchors.left: parent.left
-        }
-
-        TextField {
-            id:passwordField
-            placeholderText: qsTr('Password')
-            echoMode: TextInput.PasswordEchoOnEdit
-            anchors.right: parent.right
-            anchors.left: parent.left
-            text: Settings.savePassword ? Settings.password : ''
         }
 
         Button {
@@ -69,13 +49,11 @@ Page {
             text: qsTr("Sign in")
             onClicked: { 
                 busyindicatorLogin.running = true;
-                WalletController.getData(loginField.text, passwordField.text);
-                if (Settings.saveLogin) {
-                    Settings.login = loginField.text;
+                if (WalletController.unlockWallet(loginField.text)) {
+                    WalletController.update()
+                    pageStack.replace(Qt.createComponent(Qt.resolvedUrl("WalletPage.qml")))
                 }
-                if (Settings.savePassword) {
-                    Settings.password = passwordField.text;
-                }
+                busyindicatorLogin.running = false;
             }
             anchors.right: parent.right
             anchors.left: parent.left
@@ -94,4 +72,4 @@ Page {
     }
 }
 
-}
+} 

@@ -15,6 +15,7 @@
 
 from PySide.QtCore import QAbstractListModel, QModelIndex
 from utils import prettyPBitcoin
+from uuid import uuid4
 
 
 class Address(object):
@@ -26,6 +27,8 @@ class Address(object):
         self.priv = ''
         self.balance = 0
         self.tag = 0
+        self.doubleEncrypted = False
+        self.sharedKey = unicode(uuid4())
         self.transactions = []
 
         try:
@@ -44,6 +47,42 @@ class Address(object):
             self.tag = jsondict['tag']
         except KeyError:
             self.tag = 0
+        try:
+            self.balance = jsondict['balance']
+        except KeyError:
+            self.balance = 0
+        try:
+            self.doubleEncrypted = jsondict['doubleEncrypted']
+        except KeyError:
+            pass
+        try:
+            self.sharedKey = jsondict['sharedKey']
+        except KeyError:
+            pass
+
+        try:
+            for tx in jsondict['txs']:
+                self.transactions.append(TransactionHist(tx['hash'], tx['date'],
+                                                         tx['address'],
+                                                         tx['amount'],
+                                                         tx['confirmations']))
+        except KeyError:
+            pass
+
+    def __repr__(self, ):
+        return {'addr': self.addr,
+                'priv': self.priv,
+                'tag': self.tag,
+                'doubleEncrypted': self.doubleEncrypted,
+                'label': self.label,
+                'sharedKey': self.sharedKey,
+                'balance': self.balance,
+                'txs': [{'hash': tx.hash,
+                         'date': tx.date,
+                         'amount': tx.amount,
+                         'address': tx.address,
+                         'confirmations': tx.confirmations} for tx in self.transactions],
+                }
 
 
 class AddressesModel(QAbstractListModel):
@@ -60,10 +99,11 @@ class AddressesModel(QAbstractListModel):
     def setData(self, data):
         self.beginResetModel()
         self._addresses = data
-        self.endResetModel
+        self.endResetModel()
 
     def rowCount(self, parent=QModelIndex()):
         return len(self._addresses)
+
 
     def data(self, index, role):
         if index.isValid() and role == AddressesModel.COLUMNS.index('label'):
@@ -84,7 +124,7 @@ class AddressesModel(QAbstractListModel):
 
 
 class TransactionsModel(QAbstractListModel):
-    COLUMNS = ('date', 'address', 'amount')
+    COLUMNS = ('date', 'address', 'amount', 'confirmations')
 
     def __init__(self, ):
         self._transactions = []
@@ -94,7 +134,7 @@ class TransactionsModel(QAbstractListModel):
     def resetData(self, ):
         self._transactions = []
 
-    def setTransactions(self, transactions):
+    def setData(self, transactions):
         self.beginResetModel()
         self._transactions = transactions
         self.endResetModel()
@@ -111,12 +151,17 @@ class TransactionsModel(QAbstractListModel):
         elif (index.isValid() and role
               == TransactionsModel.COLUMNS.index('amount')):
             return prettyPBitcoin(self._transactions[index.row()].amount, True)
+        elif (index.isValid() and role
+              == TransactionsModel.COLUMNS.index('confirmations')):
+            return self._transactions[index.row()].confirmations
         return None
 
 
 class TransactionHist(object):
-    def __init__(self, txhash, date, address, amount):
+    def __init__(self, txhash, date, address, amount, confirmations):
         #QObject.__init__(self)
+        self.hash = txhash
         self.date = date
         self.address = address
-        self.amount = amount
+        self.amount = amount    
+        self.confirmations = confirmations   

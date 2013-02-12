@@ -2,66 +2,46 @@ import QtQuick 1.1
 import com.nokia.meego 1.0
 
 Page {
-    tools: mainTools
+    tools: walletTools
 
     Header{
         id:header
         source: Qt.resolvedUrl('bitcoin.svg')
-        title: qsTr('Address')
+        title: qsTr('Wallet')
         color: '#666666'
     }
 
-    Column {
-        id: addressInfo
+    BitCoinLabel {
+        id: summary
         anchors {
             top: header.bottom
-            left: parent.left
-            right: parent.right
-            leftMargin: 10
-            rightMargin: 10}
-        spacing: 5
-
-
-        Item {
-            anchors.right: parent.right
-            anchors.left: parent.left
-            height: Math.max(qrCode.height, label.height) + 10
-
-            Label {
-                id : label
-                text : '<b>' + WalletController.currentLabel + '</b><br>' + WalletController.currentAddress
-                wrapMode: Text.WrapAnywhere
-                anchors.left: parent.left
-                anchors.right: qrCode.left
-                anchors.verticalCenter:  parent.verticalCenter
-            }
-
-            Image {
-                id: qrCode
-                source: WalletController.currentAddress ?
-                            Qt.resolvedUrl('https://blockchain.info/qr?data='
-                                           + WalletController.currentAddress
-                                           + '&size=128') : undefined
-                anchors.right: parent.right
-                sourceSize.width: 128
-                sourceSize.height: 128
-                anchors.verticalCenter: parent.verticalCenter
-            }
+            horizontalCenter: parent.horizontalCenter
         }
+        text: WalletController.balance
+    }
 
-        BitCoinLabel {
-            id: summary
-            anchors {
-                
-                horizontalCenter: parent.horizontalCenter
-            }
-            text: WalletController.currentBalance
+    ListModel {
+        id: designModel
+        ListElement {
+            address:"NEEDTOBEFILLEDNEEDTOBEFILLED1234567890"
+            label:'Label'
+            balance: '0.000000'
+        }
+        ListElement {
+            address:"NEEDTOBEFILLEDNEEDTOBEFILLED1234567890"
+            label:'Label'
+            balance: '0.000000'
+        }
+        ListElement {
+            address:"NEEDTOBEFILLEDNEEDTOBEFILLED1234567890"
+            label:'Label'
+            balance: '0.000000'
         }
     }
 
     Rectangle {
         anchors {
-            top: addressInfo.bottom
+            top: summary.bottom
             right: parent.right
             left: parent.left
             bottom: parent.bottom
@@ -73,9 +53,9 @@ Page {
 
 
         ListView {
-            id:transactionsView
+            id: adressesView
             clip: true
-            model: TransactionsModel
+            model: AddressesModel
             highlightRangeMode: ListView.StrictlyEnforceRange
             anchors.fill: parent
             anchors {
@@ -86,7 +66,7 @@ Page {
             }
 
             delegate: Component {
-                id: transcationsDelegate
+                id: adressesDelegate
                 Rectangle {
                     anchors {
                         left: parent.left
@@ -103,8 +83,10 @@ Page {
                         Behavior on opacity { NumberAnimation {} }
                     }
 
+
+
                     Column {
-                        id:transactionInfos
+                        id:addressInfos
                         spacing: 10
                         anchors {
                             left: parent.left
@@ -121,7 +103,7 @@ Page {
                         }
 
                         Label {
-                            text:model.date + (model.confirmations < 100 ? ' - Unconfirmed' : '')
+                            text:model.label
                             font.pixelSize: 16
                             color: "#666666"
                             anchors.right:parent.right
@@ -129,23 +111,27 @@ Page {
 
                             Label {
                                 id: transactionAmount
-                                text: model.amount
+                                text: model.prettyBalance
                                 anchors.right: parent.right
                                 anchors.verticalCenter: parent.verticalCenter
-                                color: model.confirmations < 100 ? 'red' : (model.amount > 0 ? 'green' : 'purple')
+                                color: 'green'
                             }
                         }
 
                     }
-
-
-
 
                     MouseArea {
                         anchors.fill: parent
                         onPressed: background.opacity = 1.0;
                         onReleased: background.opacity = 0.0;
                         onPositionChanged: background.opacity = 0.0;
+                        onClicked: {
+                            console.log('Go to AddressPage :' + model.address)
+                            WalletController.setCurrentAddress(model.address)
+                            changePage(
+                                        Qt.createComponent(
+                                            Qt.resolvedUrl("AddressPage.qml")));
+                        }
                     }
                 }
             }
@@ -153,11 +139,10 @@ Page {
 
         ScrollDecorator {
             id: scrollDecorator
-            flickableItem: transactionsView
+            flickableItem: adressesView
             z:3
             platformStyle: ScrollDecoratorStyle {
             }
         }
     }
-}
-
+} 

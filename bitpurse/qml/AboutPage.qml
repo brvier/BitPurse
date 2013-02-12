@@ -121,6 +121,7 @@ Page {
 
             Label {
                 text: qsTr('<b>No Blockchain</b> Download The app uses Blockchain.info api saving valuable space and bandwidth.<br><br>'
+                           +'<b>Double Encryption</b> Your main wallet password will be saved on your phone however you can optionally set a second password required before you can make payments. This means even if your phone gets stolen your funds will still be safe!<br><br>'
                            +'<b>Secure</b> your wallet is never stored on your phone.<br><br>'
                            +'<b>100% Free and Open source</b> Use open source technology Python, PySide, Qt, PyCrypto, PyPackager, Git, Python ECDSA module, and Python PBKDF2 module . The source can be found on my github repository.')
 

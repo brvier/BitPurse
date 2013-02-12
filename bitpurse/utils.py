@@ -20,7 +20,13 @@ import urllib2
 import json
 import urllib
 
+class EC_KEY(object):
+    def __init__( self, secret ):
+        self.pubkey = ecdsa.ecdsa.Public_key( generator_secp256k1, generator_secp256k1 * secret )
+        self.privkey = ecdsa.ecdsa.Private_key( self.pubkey, secret )
+        self.secret = secret
 
+        
 def unpadding(data):
     return data[0:-ord(data[-1])]
 
@@ -71,6 +77,22 @@ def prettyPBitcoin(value, useColor=False):
         return sign + s[-10:-8] + '.' + s[-8:-6] + s[-6:]
     else:
         return '<b>' + sign + s[-10:-8] + '.' + s[-8:-6] + '</b>' + s[-6:]
+
+def regenerate_key(pk):
+    pko=ecdsa.SigningKey.from_secret_exponent(pk,SECP256k1)
+    pubkey=binascii.hexlify(pko.get_verifying_key().to_string())
+    pubkey2=hashlib.sha256(binascii.unhexlify('04'+pubkey)).hexdigest()
+    pubkey3=hashlib.new('ripemd160',binascii.unhexlify(pubkey2)).hexdigest()
+    pubkey4=hashlib.sha256(binascii.unhexlify('00'+pubkey3)).hexdigest()
+    pubkey5=hashlib.sha256(binascii.unhexlify(pubkey4)).hexdigest()
+    pubkey6=pubkey3+pubkey5[:8]
+    pubnum=int(pubkey6,16)
+    pubnumlist=[]
+    while pubnum!=0: pubnumlist.append(pubnum%58); pubnum/=58
+    address=''
+    for l in ['123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'[x] for x in pubnumlist]:
+        address=l+address
+    return '1'+addres
 
 __b58chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 __b58base = len(__b58chars)
@@ -226,11 +248,11 @@ def getDataFromChainblock(request, params=None):
         body = None
     req = urllib2.Request(request,
                           body,
-                          {'user-agent': 'KhtBitcoin',
+                          {'user-agent': 'BitPurse',
                            'Content-Type':
                            'application/x-www-form-urlencoded',
                            'Accept': 'application/json'})
     opener = urllib2.build_opener()
     fh = opener.open(req)
     result = fh.read()
-    return json.loads(result)
+    return json.loads(result)    

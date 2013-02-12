@@ -34,6 +34,14 @@ Rectangle {
         font { bold: false; family: "Nokia Pure Text"; pixelSize: 36; }
         color:"white"
         text:''
-
     }
-}
+    BusyIndicator {
+        id: busyindicatorsmall
+        platformStyle: BusyIndicatorStyle { size: "medium"; spinnerFrames: "image://theme/spinnerinverted"}
+        running: WalletController.busy ? true : false;
+        opacity: WalletController.busy ? 1.0 : 0.0;
+        anchors.right: header.right
+        anchors.rightMargin: 10
+        anchors.verticalCenter: header.verticalCenter
+    }
+} 

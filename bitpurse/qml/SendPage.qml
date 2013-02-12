@@ -44,7 +44,7 @@ Page {
 
             Label {
                 id : label
-                text : '<b>' + WalletController.currentAddressLabel + '</b><br>' + WalletController.currentAddressAddress
+                text : '<b>' + WalletController.currentLabel + '</b><br>' + WalletController.currentAddress
                 wrapMode: Text.WrapAnywhere
                 anchors.left: parent.left
                 anchors.right: parent.right
@@ -55,7 +55,7 @@ Page {
             BitCoinLabel {
                 id: summary
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: WalletController.currentAddressBalance
+                text: WalletController.currentBalance
             }
 
             Label {

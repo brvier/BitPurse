@@ -122,7 +122,7 @@ Page {
             Label {
                 text: qsTr('<b>No Blockchain</b> Download The app uses Blockchain.info api saving valuable space and bandwidth.<br><br>'
                            +'<b>Double Encryption</b> Your main wallet password will be saved on your phone however you can optionally set a second password required before you can make payments. This means even if your phone gets stolen your funds will still be safe!<br><br>'
-                           +'<b>Secure</b> your wallet is never stored on your phone.<br><br>'
+                           +'<b>Secure</b> your private key is never transmitted to a third party services.<br><br>'
                            +'<b>100% Free and Open source</b> Use open source technology Python, PySide, Qt, PyCrypto, PyPackager, Git, Python ECDSA module, and Python PBKDF2 module . The source can be found on my github repository.')
 
                 anchors {right: parent.right; left: parent.left}
@@ -137,21 +137,23 @@ Page {
 
 
             Label {
-                text: qsTr('<b>Privacy Policy</b><br>BitPurse connect to an remote bitcoin wallet service made by blockchain.info which manage your wallet using the their api.'
-                           + '<br><br>Your Bitcoin wallet encryption password is never sent to the remote server, your bitcoin wallet is decrypted locally'
-                           + '<br><br>Which datas are stored (optionnal) :<br>* Your login<br>* Your password')
+                text: qsTr('<b>Privacy Policy</b><br>BitPurse connect to an remote third party api to avoid downloading the bitcoin blockchain.'
+                           + '<br><br>Your Bitcoin private keys is never send'
+                           + '<br><br>Which datas are stored :'
+                           + '<br>* Your Private Keys, addresses with last know balances and tx (with encryptions)'
+                           + '<br>* Your main encryption password (optionnal)')
                 anchors {right: parent.right; left: parent.left}
                 wrapMode: Text.WordWrap
             }
             Label {
-                text: qsTr('<b>Blockchain.info Privacy Policy</b><br>Please see <a>https://blockchain.info/fr/wallet/how-it-works</a>')
+                text: qsTr('<b>Blockchain.info Privacy Policy</b><br>Please see <a>https://blockchain.info/about</a>')
                 anchors {right: parent.right; left: parent.left}
                 wrapMode: Text.WordWrap
                 MouseArea {
                     anchors.fill: parent
                     onClicked:
                     {
-                        Qt.openUrlExternally('https://blockchain.info/fr/wallet/how-it-works');
+                        Qt.openUrlExternally('https://blockchain.info/about');
                     }
                 }
             }

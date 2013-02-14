@@ -288,8 +288,7 @@ class Wallet(object):
                             txAddress,
                             TransactionHist(
                                 tx['hash'],
-                                unicode(datetime.fromtimestamp(tx['time'])
-                                        .strftime('%c'), 'utf-8'),
+                                tx['time'],
                                 '\n'.join(list(set(txDst)
                                 .difference([txAddress, ]))),
                                 txAddresses[txAddress], confirmations))
@@ -500,10 +499,10 @@ class WalletController(QObject):
             #self.onDoubleEncrypted.emit()
             #self.onConnected.emit(True)
             #self.setDefaultAddress()
-
+        except urllib2.URLError:
+            pass
         except Exception, err:
             print err
-            self.onConnected.emit(False)
             self.onError.emit(unicode(err))
         self.onBusy.emit()
 
@@ -552,4 +551,4 @@ class WalletController(QObject):
     currentPassKey = Property(unicode,
                               getCurrentPassKey,
                               setCurrentPassKey,
-                              notify=onCurrentPassKey)
+                              notify=onCurrentPassKey)  

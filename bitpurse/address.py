@@ -16,7 +16,7 @@
 from PySide.QtCore import QAbstractListModel, QModelIndex
 from utils import prettyPBitcoin
 from uuid import uuid4
-
+from datetime import datetime
 
 class Address(object):
 
@@ -41,6 +41,7 @@ class Address(object):
             pass
         try:
             self.priv = jsondict['priv']
+            print self.priv, ':', self.addr
         except KeyError:
             pass
         try:
@@ -63,7 +64,7 @@ class Address(object):
         try:
             for tx in jsondict['txs']:
                 self.transactions.append(TransactionHist(tx['hash'],
-                                                         tx['date'],
+                                                         tx['timestamp'],
                                                          tx['address'],
                                                          tx['amount'],
                                                          tx['confirmations']))
@@ -79,7 +80,7 @@ class Address(object):
                 'sharedKey': self.sharedKey,
                 'balance': self.balance,
                 'txs': [{'hash': tx.hash,
-                         'date': tx.date,
+                         'timestamp': tx.timestamp,
                          'amount': tx.amount,
                          'address': tx.address,
                          'confirmations': tx.confirmations}
@@ -98,6 +99,7 @@ class AddressesModel(QAbstractListModel):
     def setData(self, data):
         self.beginResetModel()
         self._addresses[:] = data
+        self._addresses.sort(key=lambda addr: addr.label)
         self.endResetModel()
 
     def rowCount(self, parent=QModelIndex()):
@@ -132,6 +134,7 @@ class TransactionsModel(QAbstractListModel):
     def setData(self, transactions):
         self.beginResetModel()
         self._transactions[:] = transactions
+        self._transactions.sort(key=lambda tx: tx.timestamp, reverse=True)
         self.endResetModel()
 
     def rowCount(self, parent=QModelIndex()):
@@ -153,10 +156,13 @@ class TransactionsModel(QAbstractListModel):
 
 
 class TransactionHist(object):
-    def __init__(self, txhash, date, address, amount, confirmations):
+    def __init__(self, txhash, timestamp, address, amount, confirmations):
         #QObject.__init__(self)
         self.hash = txhash
-        self.date = date
+        
+        self.timestamp = timestamp
+        self.date = unicode(datetime.fromtimestamp(timestamp)  
+                            .strftime('%c'), 'utf-8')
         self.address = address
         self.amount = amount
-        self.confirmations = confirmations
+        self.confirmations = confirmations      

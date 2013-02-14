@@ -29,8 +29,8 @@ from settings import Settings
 import decimal
 
 from utils import prettyPBitcoin, unpadding, \
-    getDataFromChainblock, b58decode, regenerate_key, \
-    padding
+    getDataFromChainblock, b58decode, \
+    padding, getPublicKeyFromPrivateKey
 
 
 class WrongPassword(Exception):
@@ -118,7 +118,43 @@ class Wallet(object):
         pass
 
     def importFromPrivateKey(self, passKey, privateKey):
-        pubKey = regenerate_key(privateKey)
+        
+        privateKey = privateKey.strip('\n')
+        print 'privateKey len(', len(privateKey), ') : ', privateKey
+        try:
+            #Discover type of key
+            if len(privateKey) == 43: # that's probably a base64
+                privateKey = int((privateKey+'=')
+                                 .decode('base64').encode('hex'), 16)
+        
+            elif len(privateKey) == 44:  # That's a base 58 or a base64
+                if privateKey.endswith('='):  # Base64
+                    privateKey = int(privateKey.decode('base64')
+                                     .encode('hex'), 16)
+                else:  # Base58
+                    privateKey = int(b58decode(privateKey, None)
+                                     .encode('hex'), 16)
+
+            elif len(privateKey) == 64:  # That's probably base 16
+                privateKey = int(privateKey, 16)
+                
+            elif ((len(privateKey) == 66) 
+                   and (privateKey.startswith('0x'))):  # That's probably 
+                                                       # 0x + base 16
+                privateKey = int(privateKey,16)
+                
+            elif len(privateKey) == 32:  # That's probably binary
+                privateKey = int(privateKey.encode('hex'),16)
+            else:
+                raise DataError("Can't recognize format of the key")
+
+            
+            pubKey = getPublicKeyFromPrivateKey(privateKey)            
+        except Exception:
+            import traceback
+            traceback.print_exc()        
+            raise DataError("Can't recognize format of the key")            
+            
         addr = Address()
         addr.addr = pubKey
         addr.priv = privateKey
@@ -407,7 +443,7 @@ class WalletController(QObject):
     def importFromPrivateKey(self, privateKey):
         try:
             self._wallet.importFromPrivateKey(self._currentPassKey, privateKey)
-            self.update(self._currentPassKey)
+            self.update()
         except Exception, err:
             print err
             import traceback

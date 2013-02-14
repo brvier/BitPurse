@@ -19,7 +19,26 @@ import re
 import urllib2
 import json
 import urllib
+import binascii
 
+# secp256k1, http://www.oid-info.com/get/1.3.132.0.10
+_p = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2FL
+_r = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141L
+_b = 0x0000000000000000000000000000000000000000000000000000000000000007L
+_a = 0x0000000000000000000000000000000000000000000000000000000000000000L
+_Gx = 0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798L
+_Gy = 0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8L
+curve_secp256k1 = ecdsa.ellipticcurve.CurveFp(_p, _a, _b)
+generator_secp256k1 = ecdsa.ellipticcurve.Point(curve_secp256k1, _Gx, _Gy, _r)
+oid_secp256k1 = (1, 3, 132, 0, 10)
+SECP256k1 = ecdsa.curves.Curve("SECP256k1",
+                               curve_secp256k1,
+                               generator_secp256k1,
+                               oid_secp256k1)
+                               
+__b58chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+__b58base = len(__b58chars)
+                               
 class EC_KEY(object):
     def __init__( self, secret ):
         self.pubkey = ecdsa.ecdsa.Public_key( generator_secp256k1, generator_secp256k1 * secret )
@@ -78,7 +97,7 @@ def prettyPBitcoin(value, useColor=False):
     else:
         return '<b>' + sign + s[-10:-8] + '.' + s[-8:-6] + '</b>' + s[-6:]
 
-def regenerate_key(pk):
+def getPublicKeyFromPrivateKey(pk):
     pko=ecdsa.SigningKey.from_secret_exponent(pk,SECP256k1)
     pubkey=binascii.hexlify(pko.get_verifying_key().to_string())
     pubkey2=hashlib.sha256(binascii.unhexlify('04'+pubkey)).hexdigest()
@@ -90,12 +109,9 @@ def regenerate_key(pk):
     pubnumlist=[]
     while pubnum!=0: pubnumlist.append(pubnum%58); pubnum/=58
     address=''
-    for l in ['123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'[x] for x in pubnumlist]:
+    for l in [__b58chars[x] for x in pubnumlist]:
         address=l+address
-    return '1'+addres
-
-__b58chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
-__b58base = len(__b58chars)
+    return '1'+address
 
 
 def b58encode(v):
@@ -184,22 +200,6 @@ def ASecretToSecret(key):
         return vch[1:]
     else:
         return False
-
-
-# secp256k1, http://www.oid-info.com/get/1.3.132.0.10
-_p = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2FL
-_r = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141L
-_b = 0x0000000000000000000000000000000000000000000000000000000000000007L
-_a = 0x0000000000000000000000000000000000000000000000000000000000000000L
-_Gx = 0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798L
-_Gy = 0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8L
-curve_secp256k1 = ecdsa.ellipticcurve.CurveFp(_p, _a, _b)
-generator_secp256k1 = ecdsa.ellipticcurve.Point(curve_secp256k1, _Gx, _Gy, _r)
-oid_secp256k1 = (1, 3, 132, 0, 10)
-SECP256k1 = ecdsa.curves.Curve("SECP256k1",
-                               curve_secp256k1,
-                               generator_secp256k1,
-                               oid_secp256k1)
 
 
 def filter(s):

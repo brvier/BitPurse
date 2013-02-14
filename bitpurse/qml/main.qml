@@ -135,7 +135,7 @@ PageStackWindow {
 
             MenuItem { text: qsTr("Report a bug");
                 onClicked: {
-                    Qt.openUrlExternally('https://github.com/khertan/KhtBitCoin/issues/new');
+                    Qt.openUrlExternally('https://github.com/khertan/BitPurse/issues/new');
                 }
             }
             MenuItem { text: qsTr('LogOut'); onClicked: {

@@ -21,6 +21,11 @@ import json
 import urllib
 import binascii
 
+
+class UnknowFormat(Exception):
+    pass
+
+
 # secp256k1, http://www.oid-info.com/get/1.3.132.0.10
 _p = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2FL
 _r = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141L
@@ -35,17 +40,68 @@ SECP256k1 = ecdsa.curves.Curve("SECP256k1",
                                curve_secp256k1,
                                generator_secp256k1,
                                oid_secp256k1)
-                               
+
 __b58chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 __b58base = len(__b58chars)
-                               
+
+
+# pywallet openssl private key implementation
+
+def i2d_ECPrivateKey(pkey, compressed=False):
+    if compressed:
+        key = '3081d30201010420' + \
+              '%064x' % pkey.secret + \
+              'a081a53081a2020101302c06072a8648ce3d0101022100' + \
+              '%064x' % _p + \
+              '3006040100040107042102' + \
+              '%064x' % _Gx + \
+              '022100' + \
+              '%064x' % _r + \
+              '020101a124032200'
+    else:
+        key = '308201130201010420' + \
+              '%064x' % pkey.secret + \
+              'a081a53081a2020101302c06072a8648ce3d0101022100' + \
+              '%064x' % _p + \
+              '3006040100040107044104' + \
+              '%064x' % _Gx + \
+              '%064x' % _Gy + \
+              '022100' + \
+              '%064x' % _r + \
+              '020101a144034200'
+
+    return key.decode('hex') + i2o_ECPublicKey(pkey.pubkey, compressed)
+
+
+def i2o_ECPublicKey(pubkey, compressed=False):
+    # public keys are 65 bytes long (520 bits)
+    # 0x04 + 32-byte X-coordinate + 32-byte Y-coordinate
+    # 0x00 = point at infinity, 0x02 and 0x03 = compressed, 0x04 = uncompressed
+    # compressed keys: <sign> <x> where <sign> is 0x02
+    # if y is even and 0x03 if y is odd
+    if compressed:
+        if pubkey.point.y() & 1:
+            key = '03' + '%064x' % pubkey.point.x()
+        else:
+            key = '02' + '%064x' % pubkey.point.x()
+    else:
+        key = '04' + \
+              '%064x' % pubkey.point.x() + \
+              '%064x' % pubkey.point.y()
+
+    return key.decode('hex')
+
+# end pywallet openssl private key implementation
+
+
 class EC_KEY(object):
-    def __init__( self, secret ):
-        self.pubkey = ecdsa.ecdsa.Public_key( generator_secp256k1, generator_secp256k1 * secret )
-        self.privkey = ecdsa.ecdsa.Private_key( self.pubkey, secret )
+    def __init__(self, secret):
+        self.pubkey = ecdsa.ecdsa.Public_key(generator_secp256k1,
+                                             generator_secp256k1 * secret)
+        self.privkey = ecdsa.ecdsa.Private_key(self.pubkey, secret)
         self.secret = secret
 
-        
+
 def unpadding(data):
     return data[0:-ord(data[-1])]
 
@@ -70,6 +126,24 @@ addrtype = 0
 Hash = lambda x: hashlib.sha256(hashlib.sha256(x).digest()).digest()
 hash_encode = lambda x: x[::-1].encode('hex')
 hash_decode = lambda x: x.decode('hex')[::-1]
+
+
+def wifToNum(wifpriv):
+    return sum([__b58chars.index(wifpriv[::-1][l]) * (58 ** l)
+                for l in range(len(wifpriv))]) / (2 ** 32) % (2 ** 256)
+
+
+def compressedToNum(pkey):
+    num = int(DecodeBase58Check(pkey).encode('hex'), 16)
+    return '3081d30201010420' + \
+           '%064x' % num + \
+           'a081a53081a2020101302c06072a8648ce3d0101022100' + \
+           '%064x' % _p + \
+           '3006040100040107042102' + \
+           '%064x' % _Gx + \
+           '022100' + \
+           '%064x' % _r + \
+           '020101a124032200'
 
 
 def public_key_to_bc_address(public_key):
@@ -97,21 +171,38 @@ def prettyPBitcoin(value, useColor=False):
     else:
         return '<b>' + sign + s[-10:-8] + '.' + s[-8:-6] + '</b>' + s[-6:]
 
+
 def getPublicKeyFromPrivateKey(pk):
-    pko=ecdsa.SigningKey.from_secret_exponent(pk,SECP256k1)
-    pubkey=binascii.hexlify(pko.get_verifying_key().to_string())
-    pubkey2=hashlib.sha256(binascii.unhexlify('04'+pubkey)).hexdigest()
-    pubkey3=hashlib.new('ripemd160',binascii.unhexlify(pubkey2)).hexdigest()
-    pubkey4=hashlib.sha256(binascii.unhexlify('00'+pubkey3)).hexdigest()
-    pubkey5=hashlib.sha256(binascii.unhexlify(pubkey4)).hexdigest()
-    pubkey6=pubkey3+pubkey5[:8]
-    pubnum=int(pubkey6,16)
-    pubnumlist=[]
-    while pubnum!=0: pubnumlist.append(pubnum%58); pubnum/=58
-    address=''
-    for l in [__b58chars[x] for x in pubnumlist]:
-        address=l+address
-    return '1'+address
+    b = ASecretToSecret(pk)
+    if not b:
+        raise UnknowFormat('Unrecognized key format')
+    if len(b) == 33:
+        compressed = True
+    else:
+        compressed = False
+    b = b[0:32]
+    secret = int('0x' + b.encode('hex'), 16)
+    key = EC_KEY(secret)
+    print 'pubKey:', \
+          public_key_to_bc_address(getPubKey(key.pubkey, compressed))
+    print 'privKey:', SecretToASecret(getSecret(key), compressed)
+
+    if SecretToASecret(getSecret(key), compressed) != pk:
+        raise UnknowFormat('Unrecognized key format')
+
+    return public_key_to_bc_address(getPubKey(key.pubkey, compressed))
+
+
+def getPubKey(pubkey, compressed=False):
+    return i2o_ECPublicKey(pubkey, compressed)
+
+
+def getPrivKey(pkey, compressed=False):
+    return i2d_ECPrivateKey(pkey, compressed)
+
+
+def getSecret(pkey):
+    return ('%064x' % pkey.secret).decode('hex')
 
 
 def b58encode(v):
@@ -189,8 +280,10 @@ def PrivKeyToSecret(privkey):
     return privkey[9:9 + 32]
 
 
-def SecretToASecret(secret):
-    vchIn = chr(addrtype + 128) + secret
+def SecretToASecret(secret, compressed=False, addrtype=0):
+    vchIn = chr((addrtype + 128) & 255) + secret
+    if compressed:
+        vchIn += '\01'
     return EncodeBase58Check(vchIn)
 
 
@@ -255,4 +348,4 @@ def getDataFromChainblock(request, params=None):
     opener = urllib2.build_opener()
     fh = opener.open(req)
     result = fh.read()
-    return json.loads(result)    
+    return json.loads(result)

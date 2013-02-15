@@ -20,7 +20,6 @@ import json
 from PBKDF2 import PBKDF2
 from Crypto.Cipher import AES
 import threading
-from datetime import datetime
 import os.path
 
 from address import AddressesModel, Address, TransactionHist, TransactionsModel
@@ -118,15 +117,18 @@ class Wallet(object):
         pass
 
     def importFromPrivateKey(self, passKey, privateKey):
-        
+
         privateKey = privateKey.strip('\n')
-        print 'privateKey len(', len(privateKey), ') : ', privateKey
+
+        pubKey = getPublicKeyFromPrivateKey(privateKey)
+
+        '''print 'privateKey len(', len(privateKey), ') : ', privateKey
         try:
             #Discover type of key
-            if len(privateKey) == 43: # that's probably a base64
+            if len(privateKey) == 43:  # that's probably a base64
                 privateKey = int((privateKey+'=')
                                  .decode('base64').encode('hex'), 16)
-        
+
             elif len(privateKey) == 44:  # That's a base 58 or a base64
                 if privateKey.endswith('='):  # Base64
                     privateKey = int(privateKey.decode('base64')
@@ -135,26 +137,32 @@ class Wallet(object):
                     privateKey = int(b58decode(privateKey, None)
                                      .encode('hex'), 16)
 
+            elif len(privateKey) == 51:  # That's probably a WIF
+                privateKey = wifToNum(privateKey)
+
+            elif len(privateKey) == 52:
+                #Thats probably a compressed privKey + pubKey
+                privateKey = compressedToNum(privateKey)
+
             elif len(privateKey) == 64:  # That's probably base 16
                 privateKey = int(privateKey, 16)
-                
-            elif ((len(privateKey) == 66) 
-                   and (privateKey.startswith('0x'))):  # That's probably 
+
+            elif ((len(privateKey) == 66)
+                  and (privateKey.startswith('0x'))):  # That's probably
                                                        # 0x + base 16
-                privateKey = int(privateKey,16)
-                
+                privateKey = int(privateKey, 16)
+
             elif len(privateKey) == 32:  # That's probably binary
-                privateKey = int(privateKey.encode('hex'),16)
+                privateKey = int(privateKey.encode('hex'), 16)
             else:
                 raise DataError("Can't recognize format of the key")
 
-            
-            pubKey = getPublicKeyFromPrivateKey(privateKey)            
+            pubKey = getPublicKeyFromPrivateKey(privateKey)
         except Exception:
             import traceback
-            traceback.print_exc()        
-            raise DataError("Can't recognize format of the key")            
-            
+            traceback.print_exc()
+            raise DataError("Can't recognize format of the key")'''
+
         addr = Address()
         addr.addr = pubKey
         addr.priv = privateKey
@@ -587,4 +595,4 @@ class WalletController(QObject):
     currentPassKey = Property(unicode,
                               getCurrentPassKey,
                               setCurrentPassKey,
-                              notify=onCurrentPassKey)  
+                              notify=onCurrentPassKey)

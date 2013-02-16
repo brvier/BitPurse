@@ -31,7 +31,8 @@ __upgrade__ = '''0.9.0: First beta release
 0.9.1: Second beta release, add missing python-crypto dependancy
 0.9.2: Second beta release, add missing python-crypto dependancy for deb
 0.9.3: Fix error due to API changes of BlockChain.info
-1.5.0: Rewrite to be independant of BlockChain.info my wallet service, but still use BlockChain.info API to get blockchain information
+1.5.0: Rewrite to be independant of BlockChain.info my wallet service, but
+       still use BlockChain.info API to get blockchain informations
 '''
 
 

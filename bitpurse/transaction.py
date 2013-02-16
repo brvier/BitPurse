@@ -17,7 +17,7 @@
 from utils import \
     is_valid, int_to_hex, bc_address_to_hash_160, var_int, \
     getDataFromChainblock, Hash, \
-    SECP256k1, \
+    SECP256k1, getSecretFromPrivateKey, \
     filter
 
 import urllib
@@ -59,15 +59,20 @@ class Transaction(object):
 
         if amount < 1000000 and fee < 50000:
             raise TransactionError("Not enought fee :"
-                                   " a fee of 0.0005 is required")
+                                   " a fee of 0.0005 is required for"
+                                   " small transactions")
 
         outputs.append((change_addr, change_amount))
 
         self.tx = self.signed_tx(inputs, outputs, privKey)
-        if not self.pushTx():
-            raise TransactionError("An error occur while sending transaction")
-        else:
-            raise TransactionSubmitted("Transaction successfully transmitted")
+
+        print self.tx
+
+        #Broken do not push
+        #if not self.pushTx():
+        #    raise TransactionError("An error occur while sending transaction")
+        #else:
+        #    raise TransactionSubmitted("Transaction successfully transmitted")
 
     def reverse_hash(self, rhash):
         return "".join(reversed([rhash[i: i + 2]
@@ -113,8 +118,11 @@ class Transaction(object):
         s_inputs = []
         for i in range(len(inputs)):
             addr, v, p_hash, p_pos, p_scriptPubKey, _, _ = inputs[i]
-            private_key = ecdsa.SigningKey.from_string(privKey,
-                                                       curve=SECP256k1)
+            print 'privKey:', privKey
+            secexp = getSecretFromPrivateKey(privKey)
+            private_key = \
+                ecdsa.SigningKey.from_secret_exponent(secexp,
+                                                      curve=SECP256k1)
             public_key = private_key.get_verifying_key()
             pubkey = public_key.to_string()
             tx = filter(self.raw_tx(inputs, outputs, for_sig=i))

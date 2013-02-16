@@ -41,7 +41,6 @@ class Address(object):
             pass
         try:
             self.priv = jsondict['priv']
-            print self.priv, ':', self.addr
         except KeyError:
             pass
         try:

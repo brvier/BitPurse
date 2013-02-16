@@ -19,7 +19,6 @@ import re
 import urllib2
 import json
 import urllib
-import binascii
 
 
 class UnknowFormat(Exception):
@@ -172,6 +171,16 @@ def prettyPBitcoin(value, useColor=False):
         return '<b>' + sign + s[-10:-8] + '.' + s[-8:-6] + '</b>' + s[-6:]
 
 
+def getSecretFromPrivateKey(pk):
+    b = ASecretToSecret(pk)
+    if not b:
+        raise UnknowFormat('Unrecognized key format')
+    b = b[0:32]
+    secret = int('0x' + b.encode('hex'), 16)
+    key = EC_KEY(secret)
+    return key.secret
+
+
 def getPublicKeyFromPrivateKey(pk):
     b = ASecretToSecret(pk)
     if not b:
@@ -183,9 +192,6 @@ def getPublicKeyFromPrivateKey(pk):
     b = b[0:32]
     secret = int('0x' + b.encode('hex'), 16)
     key = EC_KEY(secret)
-    print 'pubKey:', \
-          public_key_to_bc_address(getPubKey(key.pubkey, compressed))
-    print 'privKey:', SecretToASecret(getSecret(key), compressed)
 
     if SecretToASecret(getSecret(key), compressed) != pk:
         raise UnknowFormat('Unrecognized key format')

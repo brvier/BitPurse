@@ -23,7 +23,7 @@ import threading
 import os.path
 
 from address import AddressesModel, Address, TransactionHist, TransactionsModel
-from transaction import Transaction
+from transaction import Transaction, TransactionSubmitted
 from settings import Settings
 import decimal
 
@@ -243,16 +243,16 @@ class Wallet(object):
                             address.priv,
                             secondPassword,
                             self.sharedKey)
-                        if len(b58decode(uncryptedKey, None)) != 32:
+                        if len(b58decode(uncryptedKey, None)) not in (32, 33):
                             raise WrongPassword('Wrong second password')
-                        return b58decode(uncryptedKey, None)
+                        return uncryptedKey
                     except:
                         import traceback
                         traceback.print_exc()
                         raise
 
                 else:
-                    return b58decode(address.priv, None)
+                    return address.priv
 
     def getActiveAddrAddresses(self,):
         return [address.addr for address in self.addresses if address.tag == 0]
@@ -485,15 +485,16 @@ class WalletController(QObject):
     def _sendFromCurrent(self, dstAddr, amout, fee, secondPassword):
         self.onBusy.emit()
         try:
-            Transaction(self.currentAddressAddress,
+            Transaction(self.getCurrentAddress(),
                         [(dstAddr,
                          int(decimal.Decimal(amout) * 100000000)), ],
                         self._wallet.getPrivKeyForAddress(
-                        self._currentAddressAddress, secondPassword),
+                        self.getCurrentAddress(), secondPassword),
                         fee=int(decimal.Decimal(fee) * 100000000),
                         change_addr=None)
+        except TransactionSubmitted:
             self.onTxSent.emit(True)
-            self.update(self._currentPassKey)
+            self.update()
 
         except Exception, err:
             print err

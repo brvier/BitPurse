@@ -29,7 +29,7 @@ import decimal
 
 from utils import prettyPBitcoin, unpadding, \
     getDataFromChainblock, b58decode, \
-    padding, getPublicKeyFromPrivateKey
+    padding, getAddrFromPrivateKey
 
 
 class WrongPassword(Exception):
@@ -120,51 +120,10 @@ class Wallet(object):
 
         privateKey = privateKey.strip('\n')
 
-        pubKey = getPublicKeyFromPrivateKey(privateKey)
-
-        '''print 'privateKey len(', len(privateKey), ') : ', privateKey
-        try:
-            #Discover type of key
-            if len(privateKey) == 43:  # that's probably a base64
-                privateKey = int((privateKey+'=')
-                                 .decode('base64').encode('hex'), 16)
-
-            elif len(privateKey) == 44:  # That's a base 58 or a base64
-                if privateKey.endswith('='):  # Base64
-                    privateKey = int(privateKey.decode('base64')
-                                     .encode('hex'), 16)
-                else:  # Base58
-                    privateKey = int(b58decode(privateKey, None)
-                                     .encode('hex'), 16)
-
-            elif len(privateKey) == 51:  # That's probably a WIF
-                privateKey = wifToNum(privateKey)
-
-            elif len(privateKey) == 52:
-                #Thats probably a compressed privKey + pubKey
-                privateKey = compressedToNum(privateKey)
-
-            elif len(privateKey) == 64:  # That's probably base 16
-                privateKey = int(privateKey, 16)
-
-            elif ((len(privateKey) == 66)
-                  and (privateKey.startswith('0x'))):  # That's probably
-                                                       # 0x + base 16
-                privateKey = int(privateKey, 16)
-
-            elif len(privateKey) == 32:  # That's probably binary
-                privateKey = int(privateKey.encode('hex'), 16)
-            else:
-                raise DataError("Can't recognize format of the key")
-
-            pubKey = getPublicKeyFromPrivateKey(privateKey)
-        except Exception:
-            import traceback
-            traceback.print_exc()
-            raise DataError("Can't recognize format of the key")'''
+        bc = getAddrFromPrivateKey(privateKey)
 
         addr = Address()
-        addr.addr = pubKey
+        addr.addr = bc
         addr.priv = privateKey
         self.addresses.append(addr)
         self.store(passKey)
@@ -282,7 +241,7 @@ class Wallet(object):
                + '&active=%s&archived=%s'
                % ('|'.join(self.getActiveAddrAddresses()),
                '|'.join(self.getArchivedAddrAddresses())))
-        #print req
+
         data = getDataFromChainblock(req)
 
         try:
@@ -492,7 +451,8 @@ class WalletController(QObject):
                         self.getCurrentAddress(), secondPassword),
                         fee=int(decimal.Decimal(fee) * 100000000),
                         change_addr=None)
-        except TransactionSubmitted:
+        except TransactionSubmitted, err:
+            print 'TransactionSubmitted:', err
             self.onTxSent.emit(True)
             self.update()
 
@@ -596,4 +556,4 @@ class WalletController(QObject):
     currentPassKey = Property(unicode,
                               getCurrentPassKey,
                               setCurrentPassKey,
-                              notify=onCurrentPassKey)
+                              notify=onCurrentPassKey)    

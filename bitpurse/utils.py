@@ -145,21 +145,15 @@ def compressedToNum(pkey):
            '020101a124032200'
 
 
-def public_key_to_bc_address(public_key):
-    h160 = hash_160(public_key)
-    return hash_160_to_bc_address(h160)
-
-
-def hash_160_to_bc_address(h160):
+def hash_160_to_bc_address(h160, addrtype = 0):
     vh160 = chr(addrtype) + h160
     h = Hash(vh160)
     addr = vh160 + h[0:4]
     return b58encode(addr)
 
-
 def bc_address_to_hash_160(addr):
     bytes = b58decode(addr, 25)
-    return bytes[1:21]
+    return ord(bytes[0]), bytes[1:21]
 
 
 def prettyPBitcoin(value, useColor=False):
@@ -181,7 +175,7 @@ def getSecretFromPrivateKey(pk):
     return key.secret
 
 
-def getPublicKeyFromPrivateKey(pk):
+def getAddrFromPrivateKey(pk):
     b = ASecretToSecret(pk)
     if not b:
         raise UnknowFormat('Unrecognized key format')
@@ -198,6 +192,23 @@ def getPublicKeyFromPrivateKey(pk):
 
     return public_key_to_bc_address(getPubKey(key.pubkey, compressed))
 
+
+def getPubKeyFromPrivateKey(pk):
+    b = ASecretToSecret(pk)
+    if not b:
+        raise UnknowFormat('Unrecognized key format')
+    if len(b) == 33:
+        compressed = True
+    else:
+        compressed = False
+    b = b[0:32]
+    secret = int('0x' + b.encode('hex'), 16)
+    key = EC_KEY(secret)
+
+    if SecretToASecret(getSecret(key), compressed) != pk:
+        raise UnknowFormat('Unrecognized key format')
+
+    return getPubKey(key.pubkey, compressed)
 
 def getPubKey(pubkey, compressed=False):
     return i2o_ECPublicKey(pubkey, compressed)
@@ -334,7 +345,7 @@ def is_valid(addr):
     if not ADDRESS_RE.match(addr):
         return False
     try:
-        h = bc_address_to_hash_160(addr)
+        ord, h = bc_address_to_hash_160(addr)
     except:
         return False
     return addr == hash_160_to_bc_address(h)
@@ -354,4 +365,4 @@ def getDataFromChainblock(request, params=None):
     opener = urllib2.build_opener()
     fh = opener.open(req)
     result = fh.read()
-    return json.loads(result)
+    return json.loads(result)   

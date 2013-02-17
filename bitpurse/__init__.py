@@ -91,9 +91,9 @@ class BitPurse(QApplication):
         self.aboutPage = self.rootObject.findChild(QObject, "aboutPage")
         self.walletController.onError.connect(self.rootObject.onError)
         #self.walletController.onConnected.connect(self.loginPage.onConnected)
-        #self.walletController.onTxSent.connect(self.sendPage.onTxSent)
+        self.walletController.onTxSent.connect(self.sendPage.onTxSent)
         #self.walletController.onTxSent.connect(self.aboutPage.onTxSent)
 
 
 if __name__ == '__main__':
-    sys.exit(BitPurse().exec_())
+    sys.exit(BitPurse().exec_()) 

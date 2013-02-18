@@ -115,4 +115,3 @@ class Settings(QObject):
                                    _get_useDoubleEncryption,
                                    _set_useDoubleEncryption,
                                    notify=on_useDoubleEncryption)
-

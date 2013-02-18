@@ -118,7 +118,7 @@ class AddressesModel(QAbstractListModel):
             return self._addresses[index.row()].balance
         elif (index.isValid() and role
               == AddressesModel.COLUMNS.index('index')):
-            return index
+            return index.row()
         return None
 
 
@@ -164,4 +164,4 @@ class TransactionHist(object):
                             .strftime('%c'), 'utf-8')
         self.address = address
         self.amount = amount
-        self.confirmations = confirmations      
+        self.confirmations = confirmations       

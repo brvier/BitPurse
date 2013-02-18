@@ -70,7 +70,7 @@ Page {
             }
             
             TitleLabel {
-                text: qsTr("Blockchain.info MyWallet")
+                text: qsTr("Import Blockchain.info MyWallet")
             }
             
             TextField {
@@ -102,7 +102,7 @@ Page {
             }
 
             TitleLabel {
-                text: qsTr("Import from private key")
+                text: qsTr("Import a private key")
             }
 
             TextField {
@@ -128,4 +128,4 @@ Page {
         platformStyle: ScrollDecoratorStyle {
         }}
 
-}  
+}   

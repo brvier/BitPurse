@@ -105,7 +105,7 @@ class Transaction(object):
                            [(None,
                            None)]))
         return inputs
- 
+
     def signed_tx(self, inputs, outputs, privKey):
         s_inputs = self.sign_inputs(inputs, outputs, privKey)
         tx = filter(self.raw_tx(s_inputs, outputs))
@@ -120,7 +120,7 @@ class Transaction(object):
                 ecdsa.SigningKey.from_secret_exponent(secexp,
                                                       curve=SECP256k1)
             public_key = private_key.get_verifying_key()
-            pubkey = getPubKeyFromPrivateKey(privKey) #TODO
+            pubkey = getPubKeyFromPrivateKey(privKey)
             tx = filter(self.raw_tx(inputs, outputs, for_sig=i))
             sig = private_key.sign_digest(Hash(tx.decode('hex')),
                                           sigencode=ecdsa.util.sigencode_der)
@@ -137,9 +137,9 @@ class Transaction(object):
         return s_inputs
 
     def tx_filter(self, s):
-        out = re.sub('( [^\n]*|)\n','',s)
-        out = out.replace(' ','')
-        out = out.replace('\n','')
+        out = re.sub('( [^\n]*|)\n', '', s)
+        out = out.replace(' ', '')
+        out = out.replace('\n', '')
         return out
 
     #def get_private_key(self, key):
@@ -147,21 +147,21 @@ class Transaction(object):
     #    return b58decode(key)
 
     # https://en.bitcoin.it/wiki/Protocol_specification#Variable_length_integer
-    def raw_tx(self, inputs, outputs, for_sig = None ):
-        s  = int_to_hex(1,4)                                         # version
-        s += var_int( len(inputs) )                                  # number of inputs
+    def raw_tx(self, inputs, outputs, for_sig=None):
+        s = int_to_hex(1, 4)                                 # version
+        s += var_int(len(inputs))                            # number of inputs
         for i in range(len(inputs)):
             _, _, p_hash, p_index, p_script, pubkeysig = inputs[i]
-            s += p_hash.decode('hex')[::-1].encode('hex')            # prev hash
-            s += int_to_hex(p_index,4)                               # prev index
+            s += p_hash.decode('hex')[::-1].encode('hex')    # prev hash
+            s += int_to_hex(p_index, 4)                    # prev index
 
             if for_sig is None:
                 if len(pubkeysig) == 1:
                     pubkey, sig = pubkeysig[0]
                     sig = sig + chr(1)                               # hashtype
-                    script  = int_to_hex( len(sig))
+                    script = int_to_hex(len(sig))
                     script += sig.encode('hex')
-                    script += int_to_hex( len(pubkey))
+                    script += int_to_hex(len(pubkey))
                     script += pubkey.encode('hex')
                 else:
                     pubkey0, sig0 = pubkeysig[0]
@@ -174,42 +174,44 @@ class Transaction(object):
                     script += sig0.encode('hex')
                     script += int_to_hex(len(sig1))
                     script += sig1.encode('hex')
-                    script += var_int(len(inner_script)/2)
+                    script += var_int(len(inner_script) / 2)
                     script += inner_script
 
-            elif for_sig==i:
+            elif for_sig == i:
                 if len(pubkeysig) > 1:
-                    script = self.multisig_script(pubkeysig)              # p2sh uses the inner script
+                    script = self.multisig_script(pubkeysig)  # p2sh uses the
+                                                              # inner script
                 else:
-                    script = p_script                                # scriptsig
+                    script = p_script                         # scriptsig
             else:
-                script=''
-            s += var_int( len(self.tx_filter(script))/2 )                 # script length
+                script = ''
+            s += var_int(len(self.tx_filter(script)) / 2)    # script length
             s += script
-            s += "ffffffff"                                          # sequence
+            s += "ffffffff"                                   # sequence
 
-        s += var_int( len(outputs) )                                 # number of outputs
+        s += var_int(len(outputs))                      # number of outputs
         for output in outputs:
             addr, amount = output
-            s += int_to_hex( amount, 8)                              # amount
+            s += int_to_hex(amount, 8)                              # amount
             addrtype, hash_160 = bc_address_to_hash_160(addr)
             if addrtype == 0:
-                script = '76a9'                                      # op_dup, op_hash_160
-                script += '14'                                       # push 0x14 bytes
+                script = '76a9'                         # op_dup, op_hash_160
+                script += '14'                          # push 0x14 bytes
                 script += hash_160.encode('hex')
-                script += '88ac'                                     # op_equalverify, op_checksig
+                script += '88ac'                 # op_equalverify, op_checksig
             elif addrtype == 5:
-                script = 'a9'                                        # op_hash_160
-                script += '14'                                       # push 0x14 bytes
+                script = 'a9'                           # op_hash_160
+                script += '14'                          # push 0x14 bytes
                 script += hash_160.encode('hex')
-                script += '87'                                       # op_equal
+                script += '87'                          # op_equal
             else:
                 raise
 
-            s += var_int( len(self.tx_filter(script))/2 )                #  script length
-            s += script                                             #  script
-        s += int_to_hex(0,4)                                        #  lock time
-        if for_sig is not None: s += int_to_hex(1, 4)               #  hash type
+            s += var_int(len(self.tx_filter(script)) / 2)  # script length
+            s += script                                    # script
+        s += int_to_hex(0, 4)                               # lock time
+        if for_sig is not None:
+            s += int_to_hex(1, 4)      # hash type
         return self.tx_filter(s)
 
     def multisig_script(self, public_keys):
@@ -217,13 +219,13 @@ class Transaction(object):
         n = len(public_keys)
         s = '52'
         for k in public_keys:
-            s += var_int(len(k)/2)
+            s += var_int(len(k) / 2)
             s += k
-        if n==2:
+        if n == 2:
             s += '52'
-        elif n==3:
+        elif n == 3:
             s += '53'
         else:
             raise
         s += 'ae'
-        return s          
+        return s

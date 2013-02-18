@@ -65,6 +65,7 @@ class Wallet(object):
             payload = json.loads(self.decrypt(passKey,
                                  payload.decode('base64', 'strict')))
             self.settings.passKey = passKey
+            print payload
             self.addresses = [Address(jsondict=address)
                               for address in payload['keys']]
 
@@ -301,6 +302,18 @@ class Wallet(object):
         except KeyError:
             print 'None tx in json data'
 
+    @Slot(unicode)
+    def remove(self, addr):
+        del self.addresses[self.getIndex(addr)]
+
+    @Slot(unicode)
+    def getLabelForAddr(self, addr):
+        return self.addresses[self.getIndex(addr)].label
+
+    @Slot(unicode, unicode)
+    def setLabelForAddr(self, addr, label):
+        self.addresses[self.getIndex(addr)].label = label
+
     def update(self, passKey):
         try:
             #self.getRemoteWallet(login, privkey)
@@ -469,6 +482,9 @@ class WalletController(QObject):
         try:
             self.setCurrentPassKey(passKey)
             self._wallet.load_addresses(self._currentPassKey)
+            self._balance = prettyPBitcoin(self._wallet.balance)
+            print 'BALANCE : ', self._balance
+            self.onBalance.emit()
             self._walletUnlocked = True
             self.addressesModel.setData(self._wallet.getActiveAddresses())
 
@@ -510,6 +526,20 @@ class WalletController(QObject):
             print err
             self.onError.emit(unicode(err))
         self.onBusy.emit()
+
+    @Slot(unicode)
+    def remove(self, addr):
+        self._wallet.remove(addr)
+        self.update()
+
+    @Slot(unicode, result=unicode)
+    def getLabelForAddr(self, addr):
+        return self._wallet.getLabelForAddr(addr)
+
+    @Slot(unicode, unicode)
+    def setLabelForAddr(self, addr, label):
+        self._wallet.setLabelForAddr(addr, label)
+        self.update()
 
     @Slot(unicode)
     def setCurrentAddress(self, addr):
@@ -556,4 +586,4 @@ class WalletController(QObject):
     currentPassKey = Property(unicode,
                               getCurrentPassKey,
                               setCurrentPassKey,
-                              notify=onCurrentPassKey)    
+                              notify=onCurrentPassKey)

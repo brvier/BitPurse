@@ -11,6 +11,10 @@ Page {
         color: '#666666'
     }
 
+    ItemMenu {
+        id: itemMenu
+    }
+
     BitCoinLabel {
         id: summary
         anchors {
@@ -130,6 +134,10 @@ Page {
                             changePage(addressPage);
                             WalletController.update();
                         }
+                        onPressAndHold: {
+                            itemMenu.addr = model.address;
+                            itemMenu.open();
+                        }
                     }
                 }
             }
@@ -143,4 +151,31 @@ Page {
             }
         }
     }
-} 
+
+    QueryDialog {
+        
+        property string addr
+
+        id: deleteQueryDialog
+        icon: Qt.resolvedUrl('bitcoin.svg')
+        titleText: "Delete"
+        message: "Are you sure you want to delete this address and his private key ?"
+        acceptButtonText: qsTr("Delete")
+        rejectButtonText: qsTr("Cancel")
+        onAccepted: {
+            WalletController.remove(addr);
+        }
+    }
+
+    LabelDialog {
+        
+        property string addr
+
+        id: editLabelDialog
+        
+        onAccepted: {
+            WalletController.setLabelForAddr(addr, addrLabel);
+        }
+    }
+
+}     

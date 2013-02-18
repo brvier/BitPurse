@@ -132,6 +132,11 @@ def wifToNum(wifpriv):
                 for l in range(len(wifpriv))]) / (2 ** 32) % (2 ** 256)
 
 
+def public_key_to_bc_address(public_key):
+    h160 = hash_160(public_key)
+    return hash_160_to_bc_address(h160)
+
+
 def compressedToNum(pkey):
     num = int(DecodeBase58Check(pkey).encode('hex'), 16)
     return '3081d30201010420' + \
@@ -145,11 +150,12 @@ def compressedToNum(pkey):
            '020101a124032200'
 
 
-def hash_160_to_bc_address(h160, addrtype = 0):
+def hash_160_to_bc_address(h160, addrtype=0):
     vh160 = chr(addrtype) + h160
     h = Hash(vh160)
     addr = vh160 + h[0:4]
     return b58encode(addr)
+
 
 def bc_address_to_hash_160(addr):
     bytes = b58decode(addr, 25)
@@ -209,6 +215,7 @@ def getPubKeyFromPrivateKey(pk):
         raise UnknowFormat('Unrecognized key format')
 
     return getPubKey(key.pubkey, compressed)
+
 
 def getPubKey(pubkey, compressed=False):
     return i2o_ECPublicKey(pubkey, compressed)
@@ -365,4 +372,4 @@ def getDataFromChainblock(request, params=None):
     opener = urllib2.build_opener()
     fh = opener.open(req)
     result = fh.read()
-    return json.loads(result)   
+    return json.loads(result)

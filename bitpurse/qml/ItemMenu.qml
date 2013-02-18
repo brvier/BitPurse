@@ -20,7 +20,7 @@ Menu {
         MenuItem {
             text: qsTr("Copy address")
             onClicked: {
-
+                WalletController.putAddrInClipboard(addr);
             }
         }
         MenuItem {
@@ -31,4 +31,4 @@ Menu {
             }
         }
     }
-}
+} 

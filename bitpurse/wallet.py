@@ -15,6 +15,7 @@
 
 from PySide.QtCore import Slot, QObject, \
     Signal, Property
+from PySide.QtGui import QApplication, QClipboard
 import urllib2
 import json
 from PBKDF2 import PBKDF2
@@ -356,7 +357,7 @@ class WalletController(QObject):
                 self.onError.emit('Stored pass phrase is invalid')
         else:
             self._currentPassKey = None
-        self._balance = '<b>0.00</b>000000'
+        #self._balance = '<b>0.00</b>000000'
         self._currentAddressIndex = 0
 
     @Slot(result=bool)
@@ -567,6 +568,10 @@ class WalletController(QObject):
     def getWalletUnlocked(self):
         return self._walletUnlocked
 
+    @Slot(unicode)
+    def putAddrInClipboard(self, addr):
+        QApplication.clipboard().setText(addr, QClipboard.Clipboard)
+
     currentDoubleEncrypted = Property(bool, getCurrentDoubleEncrypted,
                                       notify=onCurrentDoubleEncrypted)
     busy = Property(bool, isBusy,
@@ -586,4 +591,4 @@ class WalletController(QObject):
     currentPassKey = Property(unicode,
                               getCurrentPassKey,
                               setCurrentPassKey,
-                              notify=onCurrentPassKey)
+                              notify=onCurrentPassKey)  

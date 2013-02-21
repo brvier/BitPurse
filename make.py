@@ -82,6 +82,7 @@ exit 0'''
         for f in fs:
             files.append(os.path.join(root, f))
 
+    # files.append(os.path.join(os.path.dirname(__file__), 'bitpurse.png'))
     p['/usr/share/dbus-1/services'] = ['bitpurse.service', ]
     p['/usr/share/icons/hicolor/80x80/apps'] = ['bitpurse.png', ]
     p['/usr/share/icons/hicolor/64x64/apps'] = ['bitpurse_64.png', ]
@@ -89,5 +90,6 @@ exit 0'''
     p['/usr/share/icons/hicolor/scalable/apps'] = ['bitpurse.svg', ]
     p['/usr/share/applications'] = ['bitpurse.desktop', ]
     p["/opt"] = files
+    p["/opt/bitpurse"] = ['splash.png', ]
 
-    print p.generate(('debian_source', 'rpm_source', 'debian_binary'))
+    print p.generate(('debian_source', 'rpm_source', 'debian_binary'))  

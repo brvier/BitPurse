@@ -112,11 +112,20 @@ Page {
                 width: parent.width
             }
 
+            TextField {
+                id: keyLabel
+                placeholderText: qsTr("Label")
+                
+                width: parent.width
+            }
+
             Button {
                 text: qsTr('Import')
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
-                    WalletController.importFromPrivateKey(privateKey.text);
+                    WalletController.importFromPrivateKey(privateKey.text, keyLabel.text );
+                    privateKey.text = '';
+                    keyLabel.text = '';
                 }
             }
 
@@ -128,4 +137,4 @@ Page {
         platformStyle: ScrollDecoratorStyle {
         }}
 
-}   
+}    

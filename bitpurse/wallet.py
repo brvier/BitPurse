@@ -118,7 +118,7 @@ class Wallet(object):
         #TODO
         pass
 
-    def importFromPrivateKey(self, passKey, privateKey):
+    def importFromPrivateKey(self, passKey, privateKey, label='Undefined'):
 
         privateKey = privateKey.strip('\n')
 
@@ -127,19 +127,19 @@ class Wallet(object):
         addr = Address()
         addr.addr = bc
         addr.priv = privateKey
+        addr.label = label
         self.addresses.append(addr)
         self.store(passKey)
 
     def importFromBlockchainInfoWallet(self, passKey, guid, key, skey):
         '''Import wallet from BlockChain.info MyWallet services'''
-        req = urllib2.Request('https://blockchain.info/wallet/'
-                              + '%s?format=json&resend_code=false' %
-                              (guid),
-                              None, {'user-agent': 'BitPurse'})
-        opener = urllib2.build_opener()
-        fh = opener.open(req)
-        encryptedWallet = json.loads(fh.read())['payload']
-        #print encryptedWallet
+        req = 'https://blockchain.info/wallet/' \
+              + '%s?format=json&resend_code=false' % (guid)
+
+        #opener = urllib2.build_opener()
+        #fh = opener.open(req)
+        #encryptedWallet = json.loads(fh.read())['payload']
+        encryptedWallet = getDataFromChainblock(req)['payload']
 
         try:
             data = self.decrypt(key,
@@ -373,6 +373,10 @@ class WalletController(QObject):
         self._currentPassKey = passKey
         self._wallet.store(passKey)
 
+    def storeWallet(self):
+        self._wallet.store(self._currentPassKey)
+        self.addressesModel.setData(self._wallet.getActiveAddresses())
+
     def getCurrentPassKey(self):
         return self._currentPassKey
 
@@ -419,10 +423,14 @@ class WalletController(QObject):
                                        None, (guid, key, skey))
         self.thread.start()
 
-    @Slot(unicode)
-    def importFromPrivateKey(self, privateKey):
+    @Slot(unicode, unicode)
+    def importFromPrivateKey(self, privateKey, label='Undefined'):
         try:
-            self._wallet.importFromPrivateKey(self._currentPassKey, privateKey)
+            self._wallet.importFromPrivateKey(self._currentPassKey,
+                                              privateKey,
+                                              label)
+            self.storeWallet()
+            self.onError.emit('Key imported')
             self.update()
         except Exception, err:
             print err
@@ -435,6 +443,7 @@ class WalletController(QObject):
         try:
             self._wallet.importFromBlockchainInfoWallet(self._currentPassKey,
                                                         guid, key, skey)
+            self.storeWallet()
             self._update()
         except Exception, err:
             print err
@@ -468,6 +477,7 @@ class WalletController(QObject):
         except TransactionSubmitted, err:
             print 'TransactionSubmitted:', err
             self.onTxSent.emit(True)
+            self.onError.emit(unicode(err))
             self.update()
 
         except Exception, err:
@@ -517,7 +527,10 @@ class WalletController(QObject):
                     self._wallet.addresses[self._currentAddressIndex]
                     .transactions)
             except IndexError:
-                print 'index error loading transactions model'
+                print 'index error loading transactions model : ', \
+                      self._currentAddressIndex
+                self._currentAddressIndex = 0
+
             #self.onDoubleEncrypted.emit()
             #self.onConnected.emit(True)
             #self.setDefaultAddress()
@@ -531,6 +544,7 @@ class WalletController(QObject):
     @Slot(unicode)
     def remove(self, addr):
         self._wallet.remove(addr)
+        self.storeWallet()
         self.update()
 
     @Slot(unicode, result=unicode)
@@ -540,7 +554,7 @@ class WalletController(QObject):
     @Slot(unicode, unicode)
     def setLabelForAddr(self, addr, label):
         self._wallet.setLabelForAddr(addr, label)
-        self.update()
+        self.storeWallet()
 
     @Slot(unicode)
     def setCurrentAddress(self, addr):
@@ -591,4 +605,4 @@ class WalletController(QObject):
     currentPassKey = Property(unicode,
                               getCurrentPassKey,
                               setCurrentPassKey,
-                              notify=onCurrentPassKey)  
+                              notify=onCurrentPassKey)

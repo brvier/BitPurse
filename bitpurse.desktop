@@ -3,5 +3,5 @@ Encoding=UTF-8
 Version=1.0
 Type=Application
 Name=BitPurse
-Exec=/usr/bin/invoker --type=e --single-instance /opt/bitpurse/__init__.py
+Exec=/usr/bin/invoker --splash=/opt/bitpurse/splash.png --type=e --single-instance /opt/bitpurse/__init__.py
 Icon=bitpurse

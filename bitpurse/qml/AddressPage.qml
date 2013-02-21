@@ -91,7 +91,7 @@ Page {
                         left: parent.left
                         right: parent.right
                     }
-                    height: 80
+                    height: Math.max(80, transactionInfos.height + 20)
                     color:"white"
 
                     Rectangle {
@@ -104,36 +104,53 @@ Page {
 
                     Column {
                         id:transactionInfos
-                        spacing: 10
+                        spacing: 0
                         anchors {
                             left: parent.left
                             right: parent.right
                         }
 
+                        
                         Label {
-                            anchors.right:parent.right
-                            anchors.left:parent.left
                             text:address
                             font.family: "Nokia Pure Text"
                             font.pixelSize: 18
-                            color:"black"
-                        }
-
-                        Label {
-                            text:date + (confirmations < 100 ? ' - Unconfirmed' : '')
-                            font.pixelSize: 16
-                            color: "#666666"
+                            color:"black"                                
                             anchors.right:parent.right
                             anchors.left:parent.left
+                        }
 
+
+                        Row {
+                            anchors.right:parent.right
+                            anchors.left:parent.left
+                            
+                            
+                            Label {
+                                text:date
+                                font.pixelSize: 16
+                                color: "#666666"
+                                width: parent.width - transactionAmount.width            
+                                anchors.verticalCenter: transactionAmount.verticalCenter
+
+                            }
                             Label {
                                 id: transactionAmount
                                 text: amount
-                                anchors.right: parent.right
-                                anchors.verticalCenter: parent.verticalCenter
-                                color: confirmations < 100 ? 'red' : (amount > 0 ? 'green' : 'purple')
+                                color: confirmations < 6 ? 'red' : (amount > 0 ? 'green' : 'purple')
                             }
-                        }
+                         }
+                                                    
+                         Label {
+                            id: transactionUnconfirmed
+                            text: 'Unconfirmed'
+                            color: 'red'
+                            font.pixelSize: 12
+                            anchors.right:parent.right
+                            visible: confirmations < 6 ? true : false
+                            opacity: visible == true ? 1.0 : 0.0
+                         }
+
 
                     }
 
@@ -158,4 +175,4 @@ Page {
             }
         }
     }
-}  
+}   

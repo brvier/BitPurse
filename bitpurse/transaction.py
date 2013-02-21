@@ -18,7 +18,8 @@ from utils import \
     is_valid, int_to_hex, bc_address_to_hash_160, var_int, \
     getDataFromChainblock, Hash, \
     SECP256k1, getSecretFromPrivateKey, \
-    filter, getPubKeyFromPrivateKey
+    filter, getPubKeyFromPrivateKey, \
+    HTTPSHandlerV3
 
 import urllib
 import urllib2
@@ -80,11 +81,11 @@ class Transaction(object):
         body = urllib.urlencode({'tx': self.tx})
         req = urllib2.Request(url,
                               body,
-                              {'user-agent': 'KhtBitcoin',
+                              {'user-agent': 'BitPurse',
                                'Content-Type':
                                'application/x-www-form-urlencoded',
                                'Accept': 'application/json'})
-        opener = urllib2.build_opener()
+        opener = urllib2.build_opener(HTTPSHandlerV3)
         fh = opener.open(req)
         result = fh.read()
         if unicode(result.strip()) == u'Transaction Submitted':

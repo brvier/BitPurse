@@ -18,6 +18,7 @@ from utils import prettyPBitcoin
 from uuid import uuid4
 from datetime import datetime
 
+
 class Address(object):
 
     def __init__(self, jsondict={}):
@@ -158,10 +159,10 @@ class TransactionHist(object):
     def __init__(self, txhash, timestamp, address, amount, confirmations):
         #QObject.__init__(self)
         self.hash = txhash
-        
+
         self.timestamp = timestamp
-        self.date = unicode(datetime.fromtimestamp(timestamp)  
+        self.date = unicode(datetime.fromtimestamp(timestamp)
                             .strftime('%c'), 'utf-8')
         self.address = address
         self.amount = amount
-        self.confirmations = confirmations       
+        self.confirmations = confirmations

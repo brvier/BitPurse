@@ -19,6 +19,10 @@ import re
 import urllib2
 import json
 import urllib
+import socket
+import ssl
+import httplib
+import sys
 
 
 class UnknowFormat(Exception):
@@ -358,7 +362,41 @@ def is_valid(addr):
     return addr == hash_160_to_bc_address(h)
 
 
+class HTTPSConnectionV3(httplib.HTTPSConnection):
+    def __init__(self, *args, **kwargs):
+        httplib.HTTPSConnection.__init__(self, *args, **kwargs)
+
+    def connect(self):
+        sock = socket.create_connection((self.host, self.port), self.timeout)
+        if sys.version_info < (2, 6, 7):
+            if hasattr(self, '_tunnel_host'):
+                if self._tunnel_host is not None:
+                    self.sock = sock
+                    self._tunnel()
+        else:
+            if self._tunnel_host:
+                self.sock = sock
+                self._tunnel()
+        try:
+            self.sock = ssl.wrap_socket(sock,
+                                        self.key_file,
+                                        self.cert_file,
+                                        ssl_version=ssl.PROTOCOL_SSLv3)
+        except ssl.SSLError:
+            self.sock = ssl.wrap_socket(sock,
+                                        self.key_file,
+                                        self.cert_file,
+                                        ssl_version=ssl.PROTOCOL_SSLv23)
+
+
+class HTTPSHandlerV3(urllib2.HTTPSHandler):
+    def https_open(self, req):
+        return self.do_open(HTTPSConnectionV3, req)
+
+
 def getDataFromChainblock(request, params=None):
+    #socket.setdefaulttimeout(60)
+    print request
     if params:
         body = urllib.urlencode(params)
     else:
@@ -369,7 +407,7 @@ def getDataFromChainblock(request, params=None):
                            'Content-Type':
                            'application/x-www-form-urlencoded',
                            'Accept': 'application/json'})
-    opener = urllib2.build_opener()
+    opener = urllib2.build_opener(HTTPSHandlerV3())
     fh = opener.open(req)
     result = fh.read()
     return json.loads(result)

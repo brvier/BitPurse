@@ -20,10 +20,6 @@ Features
 
 Use open source technology Python, PySide, Qt, PyCrypto, PyPackager, Git, Python ECDSA module, and Python PBKDF2 module . The source can be found on my github repository and are licenced under GPLv3
 
-Install on n9/n950 via QrCode
------------------------------------
-![Qr Code][15]
-
 Screenshots
 ------------------
 
@@ -42,16 +38,14 @@ Licenced under GPLv3.
 
 [1]:http://github.com/khertan/BitPurse/
 [3]:http://github.com/khertan/BitPurse/issues
-[4]:http://khertan.net/medias/bitpurse_screenshot_1.png
-[5]:http://khertan.net/medias/bitpurse_screenshot_2.png
-[6]:http://khertan.net/medias/bitpurse_screenshot_3.png
-[10]:http://khertan.net/medias/bitpurse_screenshot_4.png
-[7]:http://khertan.net/BitPurse
+[4]:http://khertan.net/static/medias/bitpurse_screenshot_1.png
+[5]:http://khertan.net/static/medias/bitpurse_screenshot_2.png
+[6]:http://khertan.net/static/medias/bitpurse_screenshot_3.png
+[10]:http://khertan.net/static/medias/bitpurse_screenshot_4.png
+[7]:http://khertan.net/pages/bitpurse.html
 [11]:http://khertan.net/downloads
 [12]:http://apps.formeego.com/staging/applications/n9/pr1.0/harmattan/Office/bitpurse/
 [13]:http://repo.pub.meego.com/home:/khertan/Harmattan/armel/
 [14]:http://store.ovi.com/content/320976
-[15]:http://khertan.net/medias/bitpurse_qrcode.png
-[16]:http://khertan.net/medias/bitpurse_screenshot_5.png
-[17]:http://khertan.net/medias/bitpurse_screenshot_6.png
-
+[16]:http://khertan.net/static/medias/bitpurse_screenshot_5.png
+[17]:http://khertan.net/static/medias/bitpurse_screenshot_6.png 

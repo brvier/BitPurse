@@ -47,6 +47,13 @@ class Wallet(object):
         self.balance = 0
         self.settings = Settings()
 
+    def createAddr(self, ):
+        #eckey = EC_KEY(int(os.urandom(32).encode('hex'), 16))
+        pk = b58encode(os.urandom(32))
+        addr = Address()
+        addr.priv = pk
+        addr.addr = getAddrFromPrivateKey(pk)
+
     def load_addresses(self, passKey):
         '''Load wallet from a json file
          {
@@ -96,9 +103,15 @@ class Wallet(object):
         iv = os.urandom(16)
         cipherdata = padding(cipherdata)
         key = PBKDF2(key, iv, iterations=10).read(32)
-
         cipher = AES.new(key, AES.MODE_CBC, iv)
         return iv + cipher.encrypt(cipherdata)
+
+    def encryptPK(self, data, password, sharedKey):
+        iv = os.urandom(16)
+        data = padding(data)
+        key = PBKDF2(sharedKey + password, iv, iterations=10).read(32)
+        cipher = AES.new(key, AES.MODE_CBC, iv)
+        return (iv + cipher.encrypt(data)).encode('base64')
 
     def decrypt(self, key, cipherdata):
         ''' Decrypt an wallet encrypted with a PBKDF2 Key with AES'''
@@ -492,12 +505,21 @@ class WalletController(QObject):
     def unlockWallet(self, passKey):
         try:
             self.setCurrentPassKey(passKey)
-            self._wallet.load_addresses(self._currentPassKey)
+            try:
+                self._wallet.load_addresses(self._currentPassKey)
+            except ValueError:
+                raise WrongPassword('Wrong passphrase')
             self._balance = prettyPBitcoin(self._wallet.balance)
             print 'BALANCE : ', self._balance
             self.onBalance.emit()
             self._walletUnlocked = True
             self.addressesModel.setData(self._wallet.getActiveAddresses())
+
+        except WrongPassword:
+            self.onError.emit(u'Wrong passphrase')
+            import traceback
+            traceback.print_exc()
+            return False
 
         except Exception, err:
             self.onError.emit(unicode(err))
@@ -605,4 +627,4 @@ class WalletController(QObject):
     currentPassKey = Property(unicode,
                               getCurrentPassKey,
                               setCurrentPassKey,
-                              notify=onCurrentPassKey)
+                              notify=onCurrentPassKey)    

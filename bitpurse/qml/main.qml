@@ -78,11 +78,10 @@ PageStackWindow {
         id: walletTools
         visible: false
 
-        //Create new address : planned for futur release
-        /*ToolIcon {
+        ToolIcon {
             platformIconId: "toolbar-add"
-            onClicked: {;}
-        }*/
+            onClicked: {WalletController.newAddr();}
+        }
         
         ToolIcon {
             platformIconId: "toolbar-view-menu"
@@ -98,11 +97,6 @@ PageStackWindow {
         ToolIcon {
             platformIconId: "toolbar-back"
             onClicked: {pageStack.pop();}
-        }
-
-        ToolIcon {
-            platformIconId: "toolbar-view-menu"
-            onClicked: (mainMenu.status === DialogStatus.Closed) ? mainMenu.open() : mainMenu.close()
         }
     }
 
@@ -178,4 +172,4 @@ PageStackWindow {
             }
         }
     ]
-}  
+}    

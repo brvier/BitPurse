@@ -30,7 +30,9 @@ import decimal
 
 from utils import prettyPBitcoin, unpadding, \
     getDataFromChainblock, b58decode, \
-    padding, getAddrFromPrivateKey
+    padding, getAddrFromPrivateKey, b58encode, \
+    EncodeBase58Check, EC_KEY, getSecret, \
+    SecretToASecret
 
 
 class WrongPassword(Exception):
@@ -49,10 +51,11 @@ class Wallet(object):
 
     def createAddr(self, ):
         #eckey = EC_KEY(int(os.urandom(32).encode('hex'), 16))
-        pk = b58encode(os.urandom(32))
+        pk = EC_KEY(int(os.urandom(32).encode('hex'), 16))
         addr = Address()
-        addr.priv = pk
-        addr.addr = getAddrFromPrivateKey(pk)
+        addr.priv = SecretToASecret(getSecret(pk), True)
+        addr.addr = getAddrFromPrivateKey(addr.priv)
+        self.addresses.append(addr)
 
     def load_addresses(self, passKey):
         '''Load wallet from a json file
@@ -373,6 +376,12 @@ class WalletController(QObject):
         #self._balance = '<b>0.00</b>000000'
         self._currentAddressIndex = 0
 
+    @Slot()
+    def newAddr(self):
+        self._wallet.createAddr()
+        self.storeWallet()
+        self.update()
+
     @Slot(result=bool)
     def walletExists(self,):
         if not os.path.exists(os.path.join(
@@ -627,4 +636,4 @@ class WalletController(QObject):
     currentPassKey = Property(unicode,
                               getCurrentPassKey,
                               setCurrentPassKey,
-                              notify=onCurrentPassKey)    
+                              notify=onCurrentPassKey)     

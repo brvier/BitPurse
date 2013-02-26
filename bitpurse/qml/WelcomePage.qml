@@ -37,7 +37,7 @@ Page {
             }
 
             Label {
-                text: 'Welcome to BitPurse, to encode and protect your bitcoins, please enter a pass phrase to encrypt your wallet'
+                text: 'Welcome to BitPurse, to encrypt and protect your bitcoins, please enter a pass phrase to encrypt your wallet'
                 width: parent.width
                 wrapMode: Text.Wrap
             }

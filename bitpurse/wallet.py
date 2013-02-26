@@ -129,6 +129,20 @@ class Wallet(object):
         cipher = AES.new(key, AES.MODE_CBC, data[:16])
         return unpadding(cipher.decrypt(data[16:]))
 
+    def doubleEncryptPrivKeys(self, secondPass):
+        if any([addr.isDoubleEncrypted for addr in self.addresses]):
+            raise DataError('Some keys are already double enrypted')
+        for addr in self.addresses:
+            oldpk = addr.privkey
+            if addr.sharedKey is None:
+                addr.sharedKey = 'BitPurse'    
+            addr.privkey = self.encryptPK(self.privkey, secondPass,
+                                          addr.sharedKey)
+            addr.isDoubleEncryped = True
+            assert oldpk == self.decryptPK(addr.privkey, secondPass,
+                                           addr.sharedKey)
+
+
     def exportToBlockchainInfoWallet(self, guid, key):
         '''Export wallet to BlockChain.info MyWallet services'''
         #TODO
@@ -471,6 +485,27 @@ class WalletController(QObject):
             print err
             import traceback
             traceback.print_exc()
+            self.onError.emit(unicode(err))
+        self.onBusy.emit()
+
+    @Slot(unicode)
+    def doubleEncrypt(self, secondPass):
+        if self.thread:
+            if self.thread.isAlive():
+                self.onError.emit(
+                    u'Please wait, a communication is already in progress')
+        self.thread = threading.Thread(None,
+                                       self._doubleEncrypt,
+                                       None, (secondPass,))
+        self.thread.start()
+
+    def _doubleEncrypt(self, secondPass):
+        self.onBusy.emit()
+        try:
+            self._wallet.doubleEncryptPrivKeys(secondPass)
+            self.storeWallet()
+            self._update()
+        except Exception, err:
             self.onError.emit(unicode(err))
         self.onBusy.emit()
 

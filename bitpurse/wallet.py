@@ -369,6 +369,11 @@ class WalletController(QObject):
     onCurrentAddress = Signal()
     onCurrentDoubleEncrypted = Signal()
     onCurrentPassKey = Signal()
+    self.timer = QTimer(self)
+    self.timer.setInterval(900000) # 15 min update
+    self.timer.timeout.connect(self.update)
+    self.timer.start()
+
 
     def __init__(self,):
         QObject.__init__(self,)

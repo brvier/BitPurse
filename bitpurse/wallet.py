@@ -158,8 +158,12 @@ class Wallet(object):
         addr.addr = bc
         addr.priv = privateKey
         addr.label = label
-        self.addresses.append(addr)
-        self.store(passKey)
+        
+        if addr.addr not is self.getAddrAddresses():
+            self.addresses.append(addr)
+            self.store(passKey)
+        else:
+            raise DataError('This private key is already in the wallet')
 
     def importFromBlockchainInfoWallet(self, passKey, guid, key, skey):
         '''Import wallet from BlockChain.info MyWallet services'''

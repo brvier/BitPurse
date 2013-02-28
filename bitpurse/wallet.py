@@ -463,6 +463,7 @@ class WalletController(QObject):
     @Slot(unicode)
     def createWallet(self, passKey):
         self._currentPassKey = passKey
+        self._wallet.createAddr()
         self._wallet.store(passKey)
 
     def storeWallet(self):

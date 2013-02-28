@@ -45,8 +45,8 @@ class BitPurse(QApplication):
         self.setApplicationName("BitPurse")
 
         self.view = QtDeclarative.QDeclarativeView()
-        #Are we on mer ? So don't use opengl
-        #As it didn't works on all devices
+        # Are we on mer ? So don't use opengl
+        # As it didn't works on all devices
         if os.path.exists('/etc/mer-release'):
             fullscreen = True
         elif os.path.exists('/etc/aegis'):
@@ -76,7 +76,7 @@ class BitPurse(QApplication):
                                             .transactionsModel)
         self.rootContext.setContextProperty('Settings',
                                             self.settings)
-        
+
         self.view.setSource(QUrl.fromLocalFile(
             os.path.join(os.path.dirname(__file__),
                          'qml', 'main.qml')))
@@ -86,14 +86,14 @@ class BitPurse(QApplication):
             self.view.showFullScreen()
         else:
             self.view.show()
-        #self.loginPage = self.rootObject.findChild(QObject, "loginPage")
+        # self.loginPage = self.rootObject.findChild(QObject, "loginPage")
         self.sendPage = self.rootObject.findChild(QObject, "sendPage")
         self.aboutPage = self.rootObject.findChild(QObject, "aboutPage")
         self.walletController.onError.connect(self.rootObject.onError)
-        #self.walletController.onConnected.connect(self.loginPage.onConnected)
+        # self.walletController.onConnected.connect(self.loginPage.onConnected)
         self.walletController.onTxSent.connect(self.sendPage.onTxSent)
-        #self.walletController.onTxSent.connect(self.aboutPage.onTxSent)
+        # self.walletController.onTxSent.connect(self.aboutPage.onTxSent)
 
 
 if __name__ == '__main__':
-    sys.exit(BitPurse().exec_()) 
+    sys.exit(BitPurse().exec_())

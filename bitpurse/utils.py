@@ -270,7 +270,6 @@ def b58decode(v, length):
         div, mod = divmod(long_value, 256)
         result = chr(mod) + result
         long_value = div
-    print long_value
     result = chr(long_value) + result
 
     nPad = 0
@@ -395,8 +394,7 @@ class HTTPSHandlerV3(urllib2.HTTPSHandler):
 
 
 def getDataFromChainblock(request, params=None):
-    #socket.setdefaulttimeout(60)
-    print request
+    socket.setdefaulttimeout(60)
     if params:
         body = urllib.urlencode(params)
     else:

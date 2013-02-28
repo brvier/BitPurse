@@ -131,7 +131,7 @@ Page {
                         onClicked: {
                             console.log('Go to AddressPage :' + address)
                             WalletController.setCurrentAddress(address)
-                            changePage(addressPage);
+                            pageStack.push(addressPage);
                             WalletController.update();
                         }
                         onPressAndHold: {

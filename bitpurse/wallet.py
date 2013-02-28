@@ -14,7 +14,7 @@
 ## GNU General Public License for more details.
 
 from PySide.QtCore import Slot, QObject, \
-    Signal, Property
+    Signal, Property, QTimer
 from PySide.QtGui import QApplication, QClipboard
 import urllib2
 import json
@@ -30,8 +30,8 @@ import decimal
 
 from utils import prettyPBitcoin, unpadding, \
     getDataFromChainblock, b58decode, \
-    padding, getAddrFromPrivateKey, b58encode, \
-    EncodeBase58Check, EC_KEY, getSecret, \
+    padding, getAddrFromPrivateKey, \
+    EC_KEY, getSecret, \
     SecretToASecret
 
 
@@ -50,7 +50,7 @@ class Wallet(object):
         self.settings = Settings()
 
     def createAddr(self, ):
-        #eckey = EC_KEY(int(os.urandom(32).encode('hex'), 16))
+        # eckey = EC_KEY(int(os.urandom(32).encode('hex'), 16))
         pk = EC_KEY(int(os.urandom(32).encode('hex'), 16))
         addr = Address()
         addr.priv = SecretToASecret(getSecret(pk), True)
@@ -130,49 +130,93 @@ class Wallet(object):
         return unpadding(cipher.decrypt(data[16:]))
 
     def doubleEncryptPrivKeys(self, secondPass):
-        if any([addr.isDoubleEncrypted for addr in self.addresses]):
-            raise DataError('Some keys are already double enrypted')
+        print [addr.doubleEncrypted is True for addr in self.addresses]
+        if any([addr.doubleEncrypted is True for addr in self.addresses]):
+            raise DataError('Some keys are already double encrypted')
         for addr in self.addresses:
-            oldpk = addr.privkey
+            oldpk = addr.priv
             if addr.sharedKey is None:
-                addr.sharedKey = 'BitPurse'    
-            addr.privkey = self.encryptPK(self.privkey, secondPass,
-                                          addr.sharedKey)
-            addr.isDoubleEncryped = True
-            assert oldpk == self.decryptPK(addr.privkey, secondPass,
+                addr.sharedKey = 'BitPurse'
+            addr.priv = self.encryptPK(addr.priv, secondPass,
+                                       addr.sharedKey)
+            addr.doubleEncrypted = True
+            assert oldpk == self.decryptPK(addr.priv, secondPass,
                                            addr.sharedKey)
+        self.settings.useDoubleEncryption = False
 
+    def doubleDecryptPrivKeys(self, secondPass):
+        print any([addr.doubleEncrypted is False for addr in self.addresses])
+        if any([addr.doubleEncrypted is False for addr in self.addresses]):
+            raise DataError('Some keys are not double encrypted')
+
+        # Test if password match at least for the first key
+        if (getAddrFromPrivateKey(self.decryptPK(self.addresses[0].priv,
+                                                 secondPass,
+                                                 self.addresses[0].sharedKey))
+                != self.addresses[0].addr):
+            raise DataError('Password didn\'t match')
+
+        for addr in self.addresses:
+            oldpk = addr.priv
+            if addr.sharedKey is None:
+                addr.sharedKey = 'BitPurse'
+            addr.priv = self.decryptPK(addr.priv, secondPass,
+                                       addr.sharedKey)
+            addr.doubleEncrypted = False
+            assert oldpk == self.encryptPK(addr.privkey, secondPass,
+                                           addr.sharedKey)
+        self.settings.useDoubleEncryption = True
 
     def exportToBlockchainInfoWallet(self, guid, key):
         '''Export wallet to BlockChain.info MyWallet services'''
-        #TODO
+        # TODO
         pass
 
-    def importFromPrivateKey(self, passKey, privateKey, label='Undefined'):
+    def importFromPrivateKey(self, passKey, privateKey,
+                             label='Undefined', doubleKey):
+
+        # Test if password match at least for the first key
+        if len(self.addresses) > 0:
+            if (getAddrFromPrivateKey(self.decryptPK(self.addresses[0].priv,
+                                                     secondPass,
+                                                     self.addresses[0].sharedKey))
+                    != self.addresses[0].addr):
+                raise DataError('Password didn\'t match')
 
         privateKey = privateKey.strip('\n')
-
         bc = getAddrFromPrivateKey(privateKey)
+        if addr.addr in self.getAddrAddresses():
+            raise DataError('This private key is already in the wallet')
 
         addr = Address()
         addr.addr = bc
+        addr.sharedKey = 'BitPurse'
+        if doubleKey:
+            privateKey = self.encryptPK(privateKey, doubleKey, addr.sharedKey)
+            addr.doubleEncrypted = True
         addr.priv = privateKey
         addr.label = label
-        
-        if addr.addr not is self.getAddrAddresses():
-            self.addresses.append(addr)
-            self.store(passKey)
-        else:
-            raise DataError('This private key is already in the wallet')
 
-    def importFromBlockchainInfoWallet(self, passKey, guid, key, skey):
+        self.addresses.append(addr)
+        self.store(passKey)
+
+    def importFromBlockchainInfoWallet(self, passKey, guid, key, skey, doubleKey):
         '''Import wallet from BlockChain.info MyWallet services'''
+
+        # Test if password match at least for the first key
+        if len(self.addresses) > 0:
+            if (getAddrFromPrivateKey(self.decryptPK(self.addresses[0].priv,
+                                                     secondPass,
+                                                     self.addresses[0].sharedKey))
+                    != self.addresses[0].addr):
+                raise DataError('Password didn\'t match')
+
         req = 'https://blockchain.info/wallet/' \
               + '%s?format=json&resend_code=false' % (guid)
 
-        #opener = urllib2.build_opener()
-        #fh = opener.open(req)
-        #encryptedWallet = json.loads(fh.read())['payload']
+        # opener = urllib2.build_opener()
+        # fh = opener.open(req)
+        # encryptedWallet = json.loads(fh.read())['payload']
         encryptedWallet = getDataFromChainblock(req)['payload']
 
         try:
@@ -194,7 +238,7 @@ class Wallet(object):
         if 'sharedKey' in data:
             sharedKey = data['sharedKey']
         else:
-            sharedKey = None
+            sharedKey = 'BitPurse'
 
         for address in data['keys']:
             if not self.isMine(address['addr']):
@@ -207,6 +251,10 @@ class Wallet(object):
                     address['priv'] = self.decryptPK(address['priv'],
                                                      skey, sharedKey)
                     address['doubleEncrypted'] = False
+                    if doubleKey:
+                        address['priv'] = self.encryptPK(address['priv'], doubleKey, addr.sharedKey)
+                        address['doubleEncrypted'] = True
+
                 self.addresses.append(Address(jsondict=address))
 
         print 'Importing Blockchain.info MyWallet'
@@ -351,7 +399,7 @@ class Wallet(object):
 
     def update(self, passKey):
         try:
-            #self.getRemoteWallet(login, privkey)
+            # self.getRemoteWallet(login, privkey)
             self.load_txs_from_blockchain()
             self.store(passKey)
         except:
@@ -373,11 +421,6 @@ class WalletController(QObject):
     onCurrentAddress = Signal()
     onCurrentDoubleEncrypted = Signal()
     onCurrentPassKey = Signal()
-    self.timer = QTimer(self)
-    self.timer.setInterval(900000) # 15 min update
-    self.timer.timeout.connect(self.update)
-    self.timer.start()
-
 
     def __init__(self,):
         QObject.__init__(self,)
@@ -387,6 +430,10 @@ class WalletController(QObject):
         self.settings = Settings()
         self.addressesModel = AddressesModel()
         self.transactionsModel = TransactionsModel()
+        self.timer = QTimer(self)
+        self.timer.setInterval(900000)  # 15 min update
+        self.timer.timeout.connect(self.update)
+        self.timer.start()
 
         if self.settings.storePassKey:
             self._currentPassKey = self.settings.passKey
@@ -396,7 +443,7 @@ class WalletController(QObject):
                 self.onError.emit('Stored pass phrase is invalid')
         else:
             self._currentPassKey = None
-        #self._balance = '<b>0.00</b>000000'
+        # self._balance = '<b>0.00</b>000000'
         self._currentAddressIndex = 0
 
     @Slot()
@@ -468,12 +515,14 @@ class WalletController(QObject):
                                        None, (guid, key, skey))
         self.thread.start()
 
-    @Slot(unicode, unicode)
-    def importFromPrivateKey(self, privateKey, label='Undefined'):
+    @Slot(unicode, unicode, unicode)
+    def importFromPrivateKey(self, privateKey,
+                             label='Undefined', doubleKey=''):
         try:
             self._wallet.importFromPrivateKey(self._currentPassKey,
                                               privateKey,
-                                              label)
+                                              label,
+                                              doubleKey)
             self.storeWallet()
             self.onError.emit('Key imported')
             self.update()
@@ -483,7 +532,7 @@ class WalletController(QObject):
             traceback.print_exc()
             self.onError.emit(unicode(err))
 
-    def _importFromBlockchainInfoWallet(self, guid, key, skey):
+    def _importFromBlockchainInfoWallet(self, guid, key, skey, doubleKey):
         self.onBusy.emit()
         try:
             self._wallet.importFromBlockchainInfoWallet(self._currentPassKey,
@@ -498,23 +547,34 @@ class WalletController(QObject):
         self.onBusy.emit()
 
     @Slot(unicode)
-    def doubleEncrypt(self, secondPass):
-        if self.thread:
-            if self.thread.isAlive():
-                self.onError.emit(
-                    u'Please wait, a communication is already in progress')
-        self.thread = threading.Thread(None,
-                                       self._doubleEncrypt,
-                                       None, (secondPass,))
-        self.thread.start()
+    def doubleEncrypt(self, doubleKey):
+        return self._doubleEncrypt(doubleKey)
 
-    def _doubleEncrypt(self, secondPass):
+    def _doubleEncrypt(self, doubleKey):
         self.onBusy.emit()
         try:
-            self._wallet.doubleEncryptPrivKeys(secondPass)
+            self._wallet.doubleEncryptPrivKeys(doubleKey)
+            self.settings.useDoubleEncryption = True
             self.storeWallet()
             self._update()
         except Exception, err:
+            self.onError.emit(unicode(err))
+            raise(err)
+        self.onBusy.emit()
+
+    @Slot(unicode)
+    def doubleDecrypt(self, doubleKey):
+        return self._doubleDecrypt(doubleKey)
+
+    def _doubleDecrypt(self, doubleKey):
+        self.onBusy.emit()
+        try:
+            self._wallet.doubleDecryptPrivKeys(doubleKey)
+            self.settings.useDoubleEncryption = False
+            self.storeWallet()
+            self._update()
+        except Exception, err:
+            raise err
             self.onError.emit(unicode(err))
         self.onBusy.emit()
 
@@ -563,7 +623,6 @@ class WalletController(QObject):
             except ValueError:
                 raise WrongPassword('Wrong passphrase')
             self._balance = prettyPBitcoin(self._wallet.balance)
-            print 'BALANCE : ', self._balance
             self.onBalance.emit()
             self._walletUnlocked = True
             self.addressesModel.setData(self._wallet.getActiveAddresses())
@@ -583,11 +642,12 @@ class WalletController(QObject):
 
     @Slot()
     def update(self,):
-        if self.thread:
-            if self.thread.isAlive():
-                return
-        self.thread = threading.Thread(None, self._update, None, ())
-        self.thread.start()
+        if self._walletUnlocked:
+            if self.thread:
+                if self.thread.isAlive():
+                    return
+            self.thread = threading.Thread(None, self._update, None, ())
+            self.thread.start()
 
     def _update(self,):
         self.onBusy.emit()
@@ -595,7 +655,7 @@ class WalletController(QObject):
             self._wallet.update(self._currentPassKey)
             self._balance = prettyPBitcoin(self._wallet.balance)
             self.onBalance.emit()
-            #print self._wallet.getActiveAddresses()
+            # print self._wallet.getActiveAddresses()
             self.addressesModel.setData(self._wallet.getActiveAddresses())
             try:
                 self.transactionsModel.setData(
@@ -606,9 +666,9 @@ class WalletController(QObject):
                       self._currentAddressIndex
                 self._currentAddressIndex = 0
 
-            #self.onDoubleEncrypted.emit()
-            #self.onConnected.emit(True)
-            #self.setDefaultAddress()
+            # self.onDoubleEncrypted.emit()
+            # self.onConnected.emit(True)
+            # self.setDefaultAddress()
         except urllib2.URLError:
             pass
         except Exception, err:
@@ -680,4 +740,4 @@ class WalletController(QObject):
     currentPassKey = Property(unicode,
                               getCurrentPassKey,
                               setCurrentPassKey,
-                              notify=onCurrentPassKey)     
+                              notify=onCurrentPassKey)

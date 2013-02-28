@@ -61,6 +61,17 @@ Page {
                     id: useDoubleEncryptionSwitch
                     anchors.right: parent.right
                     checked: Settings.useDoubleEncryption
+                    onCheckedChanged: {
+                        if (useDoubleEncryptionSwitch.checked != Settings.useDoubleEncryption) {
+                            if (useDoubleEncryptionSwitch.checked == false) {
+                                pageStack.push(Qt.createComponent(
+                                    Qt.resolvedUrl("DoubleDecryptPage.qml")));
+                            } else {
+                                pageStack.push(Qt.createComponent(
+                                    Qt.resolvedUrl("DoubleEncryptPage.qml")));
+                            }
+                        }
+                    }
                     Binding {
                         target: Settings
                         property: "useDoubleEncryption"
@@ -90,14 +101,31 @@ Page {
                 echoMode: TextInput.Password
                 width: parent.width
             }
+            TextField {
+                id: blockchainDoubleEncryption
+                placeholderText: qsTr("Double encryption password")
+                visible: Settings.useDoubleEncryption
+                opacity: visible ? 1.0 : 0.0
+                echoMode: TextInput.Password
+                width: parent.width
+            }
+
             Button {
                 text: qsTr('Import')
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
-                    WalletController.importFromBlockchainInfoWallet(
-                                blockchainGuid.text,
-                                blockchainKey.text,
-                                blockchainSecondKey.text);
+                    if (Settings.useDoubleEncryption) {
+                            WalletController.importFromBlockchainInfoWallet(
+                                    blockchainGuid.text,
+                                    blockchainKey.text,
+                                    blockchainSecondKey.text,
+                                    blockchainDoubleEncryption.text);
+                        } else {
+                            WalletController.importFromBlockchainInfoWallet(
+                                    blockchainGuid.text,
+                                    blockchainKey.text,
+                                    blockchainSecondKey.text, '');    
+                        }
                 }
             }
 
@@ -119,11 +147,24 @@ Page {
                 width: parent.width
             }
 
+            TextField {
+                id: keyDoubleEncryption
+                placeholderText: qsTr("Double encryption password")                
+                visible: Settings.useDoubleEncryption
+                opacity: visible ? 1.0 : 0.0
+                width: parent.width
+            }
+
             Button {
                 text: qsTr('Import')
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
-                    WalletController.importFromPrivateKey(privateKey.text, keyLabel.text );
+                    if (Settings.useDoubleEncryption) {
+                        WalletController.importFromPrivateKey(privateKey.text, keyLabel.text, keyDoubleEncryption.text);
+                    } else {
+                        WalletController.importFromPrivateKey(privateKey.text, keyLabel.text );
+                    }
+
                     privateKey.text = '';
                     keyLabel.text = '';
                 }

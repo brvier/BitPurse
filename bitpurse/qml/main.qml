@@ -55,7 +55,7 @@ PageStackWindow {
 
         ToolIcon {
             platformIconId: "toolbar-home"
-            onClicked: {changePage(walletPage); WalletController.update();}
+            onClicked: {pageStack.pop(); WalletController.update();}
         }
 
         ToolIcon {

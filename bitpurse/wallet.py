@@ -76,7 +76,7 @@ class Wallet(object):
             payload = json.loads(self.decrypt(passKey,
                                  payload.decode('base64', 'strict')))
             self.settings.passKey = passKey
-            print payload
+
             self.addresses = [Address(jsondict=address)
                               for address in payload['keys']]
 
@@ -130,7 +130,6 @@ class Wallet(object):
         return unpadding(cipher.decrypt(data[16:]))
 
     def doubleEncryptPrivKeys(self, secondPass):
-        print [addr.doubleEncrypted is True for addr in self.addresses]
         if any([addr.doubleEncrypted is True for addr in self.addresses]):
             raise DataError('Some keys are already double encrypted')
         for addr in self.addresses:
@@ -142,10 +141,10 @@ class Wallet(object):
             addr.doubleEncrypted = True
             assert oldpk == self.decryptPK(addr.priv, secondPass,
                                            addr.sharedKey)
+            QApplication.processEvents()
         self.settings.useDoubleEncryption = False
 
     def doubleDecryptPrivKeys(self, secondPass):
-        print any([addr.doubleEncrypted is False for addr in self.addresses])
         if any([addr.doubleEncrypted is False for addr in self.addresses]):
             raise DataError('Some keys are not double encrypted')
 
@@ -165,6 +164,7 @@ class Wallet(object):
             addr.doubleEncrypted = False
             assert oldpk == self.encryptPK(addr.privkey, secondPass,
                                            addr.sharedKey)
+            QApplication.processEvents()
         self.settings.useDoubleEncryption = True
 
     def exportToBlockchainInfoWallet(self, guid, key):
@@ -173,19 +173,20 @@ class Wallet(object):
         pass
 
     def importFromPrivateKey(self, passKey, privateKey,
-                             label='Undefined', doubleKey):
+                             label='Undefined', doubleKey=''):
 
         # Test if password match at least for the first key
         if len(self.addresses) > 0:
             if (getAddrFromPrivateKey(self.decryptPK(self.addresses[0].priv,
-                                                     secondPass,
-                                                     self.addresses[0].sharedKey))
+                                                     doubleKey,
+                                                     self.addresses[0]
+                                                     .sharedKey))
                     != self.addresses[0].addr):
                 raise DataError('Password didn\'t match')
 
         privateKey = privateKey.strip('\n')
         bc = getAddrFromPrivateKey(privateKey)
-        if addr.addr in self.getAddrAddresses():
+        if bc in self.getAddrAddresses():
             raise DataError('This private key is already in the wallet')
 
         addr = Address()
@@ -200,14 +201,16 @@ class Wallet(object):
         self.addresses.append(addr)
         self.store(passKey)
 
-    def importFromBlockchainInfoWallet(self, passKey, guid, key, skey, doubleKey):
+    def importFromBlockchainInfoWallet(self, passKey, guid, key,
+                                       skey, doubleKey):
         '''Import wallet from BlockChain.info MyWallet services'''
 
         # Test if password match at least for the first key
         if len(self.addresses) > 0:
             if (getAddrFromPrivateKey(self.decryptPK(self.addresses[0].priv,
-                                                     secondPass,
-                                                     self.addresses[0].sharedKey))
+                                                     doubleKey,
+                                                     self.addresses[0]
+                                                     .sharedKey))
                     != self.addresses[0].addr):
                 raise DataError('Password didn\'t match')
 
@@ -252,7 +255,9 @@ class Wallet(object):
                                                      skey, sharedKey)
                     address['doubleEncrypted'] = False
                     if doubleKey:
-                        address['priv'] = self.encryptPK(address['priv'], doubleKey, addr.sharedKey)
+                        address['priv'] = self.encryptPK(address['priv'],
+                                                         doubleKey,
+                                                         address['sharedKey'])
                         address['doubleEncrypted'] = True
 
                 self.addresses.append(Address(jsondict=address))
@@ -425,6 +430,7 @@ class WalletController(QObject):
     def __init__(self,):
         QObject.__init__(self,)
         self.thread = None
+        self._balance = '<b>0.00</b>000000'
         self._wallet = Wallet()
         self._walletUnlocked = False
         self.settings = Settings()
@@ -443,7 +449,6 @@ class WalletController(QObject):
                 self.onError.emit('Stored pass phrase is invalid')
         else:
             self._currentPassKey = None
-        # self._balance = '<b>0.00</b>000000'
         self._currentAddressIndex = 0
 
     @Slot()

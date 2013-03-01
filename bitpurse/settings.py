@@ -33,18 +33,19 @@ class Settings(QObject):
     def __init__(self,):
         QObject.__init__(self,)
         self.config = ConfigParser.ConfigParser()
-        if self.check_default_and_load() is None:
-            self._write_default()
+        self.check_default_and_load()
 
     def check_default_and_load(self):
         if not os.path.exists(os.path.expanduser('~/.bitpurse.cfg')):
-            return False
+            print 'Missing prefs'
+            self._write_default()
         self.config.read(os.path.expanduser('~/.bitpurse.cfg'))
-        if len(set(self.config.options('Security')).symmetric_difference(
-            set(('encryptWallet', 'storePassKey', 'passKey',
-                 'useDoubleEncryption')))) != 0:
-            return False
-        return True
+        if 'usedoubleencryption' not in self.config.options('Security'):
+            self._write_default()
+        elif 'passkey' not in self.config.options('Security'):
+            self._write_default()
+        elif 'storepasskey' not in self.config.options('Security'):
+            self._write_default()
 
     def _write_default(self):
         ''' Write the default config'''
@@ -59,11 +60,11 @@ class Settings(QObject):
             self.config.write(configfile)
 
     def _set(self, option, value):
-        #Avoid useless change due to binding
+        # Avoid useless change due to binding
         if self.get(option) == value:
             return
 
-        if option in ('encryptWallet', 'storePassKey', 'passKey',
+        if option in ('storePassKey', 'passKey',
                       'useDoubleEncryption', ):
             self.config.set('Security', option, value)
         else:

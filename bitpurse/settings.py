@@ -34,6 +34,7 @@ class Settings(QObject):
         QObject.__init__(self,)
         self.config = ConfigParser.ConfigParser()
         self.check_default_and_load()
+        self.currentPassKey = ''
 
     def check_default_and_load(self):
         if not os.path.exists(os.path.expanduser('~/.bitpurse.cfg')):
@@ -98,12 +99,20 @@ class Settings(QObject):
 
     def _set_storePassKey(self, b):
         self._set('storePassKey', 'true' if b else 'false')
+        if b is 'false':
+            self._set('passKey', '')
+        else:
+            self._set('passKey', self.currentPassKey)
+        self.on_storePassKey.emit()
+        self.on_passKey.emit()
 
     def _set_passKey(self, passKey):
         self._set('passKey', passKey)
+        self.on_passKey.emit()
 
     def _set_useDoubleEncryption(self, b):
         self._set('useDoubleEncryption', 'true' if b else 'false')
+        self.on_useDoubleEncryption.emit()
 
     on_storePassKey = Signal()
     on_passKey = Signal()

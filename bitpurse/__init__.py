@@ -60,7 +60,6 @@ class BitPurse(QApplication):
             fullscreen = False
 
         self.walletController = WalletController()
-        self.settings = Settings()
         self.rootContext = self.view.rootContext()
         self.rootContext.setContextProperty("argv", sys.argv)
         self.rootContext.setContextProperty("__version__", __version__)
@@ -75,7 +74,8 @@ class BitPurse(QApplication):
                                             self.walletController
                                             .transactionsModel)
         self.rootContext.setContextProperty('Settings',
-                                            self.settings)
+                                            self.walletController
+                                            .settings)
 
         self.view.setSource(QUrl.fromLocalFile(
             os.path.join(os.path.dirname(__file__),

@@ -144,26 +144,35 @@ class Wallet(object):
             QApplication.processEvents()
         self.settings.useDoubleEncryption = False
 
+    def testDoublePK(self, secondPass):
+        # Test if password match at least for the first key
+        if len(self.addresses) < 1:
+            return
+
+        try:
+            if (getAddrFromPrivateKey(self.decryptPK(self.addresses[0]
+                                                     .priv,
+                                                     secondPass,
+                                                     self.addresses[0]
+                                                     .sharedKey))
+                    != self.addresses[0].addr):
+                raise DataError('Double Password didn\'t match with other keys')
+        except:
+            raise DataError('Double Password didn\'t match with other keys')
+
     def doubleDecryptPrivKeys(self, secondPass):
         if any([addr.doubleEncrypted is False for addr in self.addresses]):
             raise DataError('Some keys are not double encrypted')
 
-        # Test if password match at least for the first key
-        if (getAddrFromPrivateKey(self.decryptPK(self.addresses[0].priv,
-                                                 secondPass,
-                                                 self.addresses[0].sharedKey))
-                != self.addresses[0].addr):
-            raise DataError('Password didn\'t match')
+        self.testDoublePK(secondPass)
 
         for addr in self.addresses:
-            oldpk = addr.priv
             if addr.sharedKey is None:
                 addr.sharedKey = 'BitPurse'
             addr.priv = self.decryptPK(addr.priv, secondPass,
                                        addr.sharedKey)
             addr.doubleEncrypted = False
-            assert oldpk == self.encryptPK(addr.privkey, secondPass,
-                                           addr.sharedKey)
+            assert addr.addr == getAddrFromPrivateKey(addr.priv)
             QApplication.processEvents()
         self.settings.useDoubleEncryption = True
 
@@ -176,13 +185,8 @@ class Wallet(object):
                              label='Undefined', doubleKey=''):
 
         # Test if password match at least for the first key
-        if len(self.addresses) > 0:
-            if (getAddrFromPrivateKey(self.decryptPK(self.addresses[0].priv,
-                                                     doubleKey,
-                                                     self.addresses[0]
-                                                     .sharedKey))
-                    != self.addresses[0].addr):
-                raise DataError('Password didn\'t match')
+        if doubleKey:
+            self.testDoublePK(doubleKey)
 
         privateKey = privateKey.strip('\n')
         bc = getAddrFromPrivateKey(privateKey)
@@ -202,17 +206,12 @@ class Wallet(object):
         self.store(passKey)
 
     def importFromBlockchainInfoWallet(self, passKey, guid, key,
-                                       skey, doubleKey):
+                                       skey, doubleKey=''):
         '''Import wallet from BlockChain.info MyWallet services'''
 
         # Test if password match at least for the first key
-        if len(self.addresses) > 0:
-            if (getAddrFromPrivateKey(self.decryptPK(self.addresses[0].priv,
-                                                     doubleKey,
-                                                     self.addresses[0]
-                                                     .sharedKey))
-                    != self.addresses[0].addr):
-                raise DataError('Password didn\'t match')
+        if doubleKey:
+            self.testDoublePK(doubleKey)
 
         req = 'https://blockchain.info/wallet/' \
               + '%s?format=json&resend_code=false' % (guid)
@@ -468,8 +467,10 @@ class WalletController(QObject):
     @Slot(unicode)
     def createWallet(self, passKey):
         self._currentPassKey = passKey
+        self._walletUnlocked = True
         self._wallet.createAddr()
         self._wallet.store(passKey)
+        self.update()
 
     def storeWallet(self):
         self._wallet.store(self._currentPassKey)
@@ -480,6 +481,7 @@ class WalletController(QObject):
 
     def setCurrentPassKey(self, value):
         self._currentPassKey = value
+        self.settings.currentPassKey = value
         self.onCurrentPassKey.emit()
 
     def getCurrentBalance(self):
@@ -552,7 +554,7 @@ class WalletController(QObject):
             self.onError.emit(unicode(err))
         self.onBusy.emit()
 
-    @Slot(unicode)
+    @Slot(unicode, result=bool)
     def doubleEncrypt(self, doubleKey):
         return self._doubleEncrypt(doubleKey)
 
@@ -565,10 +567,12 @@ class WalletController(QObject):
             self._update()
         except Exception, err:
             self.onError.emit(unicode(err))
-            raise(err)
+            self.settings.useDoubleEncryption = False
+            self.settings.on_useDoubleEncryption.emit()
         self.onBusy.emit()
+        return self.settings.useDoubleEncryption
 
-    @Slot(unicode)
+    @Slot(unicode, result=bool)
     def doubleDecrypt(self, doubleKey):
         return self._doubleDecrypt(doubleKey)
 
@@ -580,9 +584,11 @@ class WalletController(QObject):
             self.storeWallet()
             self._update()
         except Exception, err:
-            raise err
+            self.settings.useDoubleEncryption = True
+            self.settings.on_useDoubleEncryption.emit()
             self.onError.emit(unicode(err))
         self.onBusy.emit()
+        return self.settings.useDoubleEncryption
 
     @Slot(unicode, unicode, unicode, unicode)
     def sendFromCurrent(self, dstAddr, amout, fee, secondPassword=None):

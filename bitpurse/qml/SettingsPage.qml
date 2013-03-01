@@ -150,6 +150,7 @@ Page {
             TextField {
                 id: keyDoubleEncryption
                 placeholderText: qsTr("Double encryption password")                
+                echoMode: TextInput.Password
                 visible: Settings.useDoubleEncryption
                 opacity: visible ? 1.0 : 0.0
                 width: parent.width
@@ -162,11 +163,12 @@ Page {
                     if (Settings.useDoubleEncryption) {
                         WalletController.importFromPrivateKey(privateKey.text, keyLabel.text, keyDoubleEncryption.text);
                     } else {
-                        WalletController.importFromPrivateKey(privateKey.text, keyLabel.text );
+                        WalletController.importFromPrivateKey(privateKey.text, keyLabel.text, '' );
                     }
 
                     privateKey.text = '';
                     keyLabel.text = '';
+                    keyDoubleEncryption.text = '';
                 }
             }
 

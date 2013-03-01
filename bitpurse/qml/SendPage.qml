@@ -91,16 +91,16 @@ Page {
             }
 
             Label {
-                opacity: WalletController.doubleEncrypted ? 1.0 : 0.0
-                visible: WalletController.doubleEncrypted ? true : false
+                opacity: WalletController.currentDoubleEncrypted ? 1.0 : 0.0
+                visible: WalletController.currentDoubleEncrypted ? true : false
                 text: qsTr('<b>Second Password</b>')
             }
 
             TextField {
                 id:secondPasswordField
-                echoMode: TextInput.PasswordEchoOnEdit
-                opacity: WalletController.doubleEncrypted ? 1.0 : 0.0
-                visible: WalletController.doubleEncrypted ? true : false
+                echoMode: TextInput.Password
+                opacity: WalletController.currentDoubleEncrypted ? 1.0 : 0.0
+                visible: WalletController.currentDoubleEncrypted ? true : false
                 anchors.right: parent.right
                 anchors.left: parent.left
             }

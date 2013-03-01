@@ -156,7 +156,8 @@ class Wallet(object):
                                                      self.addresses[0]
                                                      .sharedKey))
                     != self.addresses[0].addr):
-                raise DataError('Double Password didn\'t match with other keys')
+                raise DataError('Double Password didn\'t match '
+                                'with other keys')
         except:
             raise DataError('Double Password didn\'t match with other keys')
 
@@ -289,8 +290,11 @@ class Wallet(object):
                         uncryptedKey = self.decryptPK(
                             address.priv,
                             secondPassword,
-                            self.sharedKey)
-                        if len(b58decode(uncryptedKey, None)) not in (32, 33):
+                            address.sharedKey)
+                        try:
+                            if getAddrFromPrivateKey(uncryptedKey) != address.addr:
+                                raise WrongPassword('Wrong second password')
+                        except:
                             raise WrongPassword('Wrong second password')
                         return uncryptedKey
                     except:

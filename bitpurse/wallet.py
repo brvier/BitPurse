@@ -516,6 +516,27 @@ class WalletController(QObject):
         except IndexError:
             return False
 
+    @Slot()
+    def exportWithShareUI(self):
+        import dbus
+        import urllib
+	import shutil
+	shutil.copyfile(os.path.join(os.path.expanduser('~'),
+                        '.bitpurse.wallet'),
+			os.path.join(os.path.expanduser('~'),
+			'MyDocs',                        
+			'bitpurse.wallet'))
+        bus = dbus.SessionBus()        
+        shareService = bus.get_object('com.nokia.ShareUi', '/')        
+        share = shareService.get_dbus_method('share', 'com.nokia.maemo.meegotouch.ShareUiInterface')
+        description = urllib.quote('BitPurse Wallet')
+        title = urllib.quote('BitPurse Wallet')
+        link = os.path.join(os.path.expanduser('~'),
+	       'MyDocs',                        
+	       'bitpurse.wallet')
+        item = '%s'%link
+        share([item,])
+
     @Slot(unicode, unicode, unicode)
     def importFromBlockchainInfoWallet(self, guid, key, skey):
         if self.thread:
@@ -756,4 +777,4 @@ class WalletController(QObject):
     currentPassKey = Property(unicode,
                               getCurrentPassKey,
                               setCurrentPassKey,
-                              notify=onCurrentPassKey)
+                              notify=onCurrentPassKey)   

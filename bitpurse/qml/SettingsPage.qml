@@ -172,6 +172,17 @@ Page {
                 }
             }
 
+            TitleLabel {
+                text: qsTr("Export Wallet Encrypted")
+            }
+
+            Button {
+                text: qsTr("Export")
+                anchors.horizontalCenter: parent.horizontalCenter
+                onClicked: {
+                    WalletController.exportWithShareUI();
+                }
+            }
         }
     }
 

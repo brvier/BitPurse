@@ -54,7 +54,7 @@ Page {
                 font.pixelSize: 24
             }
             Label {
-                text: qsTr('A nice looking Blockchain.info Bitcoin Wallet Client for MeeGo, SailfishOS, NemoMobile, and Harmattan.')
+                text: qsTr('A nice looking Bitcoin Client for MeeGo, SailfishOS, NemoMobile, and Harmattan.')
                 anchors {right: parent.right; left: parent.left}
                 wrapMode: Text.WordWrap
             }
@@ -78,9 +78,9 @@ Page {
             TextField {
                 id:donatePassword
                 placeholderText: qsTr('Second Password')
-                echoMode: TextInput.PasswordEchoOnEdit
-                opacity: WalletController.doubleEncrypted ? 1.0 : 0.0
-                visible: WalletController.doubleEncrypted ? true : false
+                echoMode: TextInput.Password
+                opacity: WalletController.currentDoubleEncrypted ? 1.0 : 0.0
+                visible: WalletController.currentDoubleEncrypted ? true : false
                 anchors.right: parent.right
                 anchors.left: parent.left
             }
@@ -118,6 +118,16 @@ Page {
                     }
                 }
             }
+
+               /* Button {
+                    id: openTutorial
+                    width: 350; height: 50
+                    text: qsTr("Go to tutorial")
+                    onClicked: { 
+			pageStack.push(Qt.createComponent(Qt.resolvedUrl('TutorialPage.qml')));
+                    }
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }*/
 
             Label {
                 text: qsTr('<b>No Blockchain</b> Download The app uses Blockchain.info api saving valuable space and bandwidth.<br><br>'
@@ -165,5 +175,4 @@ Page {
             }
         }
     }
-}
-
+}   

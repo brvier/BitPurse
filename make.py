@@ -89,6 +89,7 @@ exit 0'''
     p['/usr/share/icons/hicolor/128x128/apps'] = ['bitpurse_128.png', ]
     p['/usr/share/icons/hicolor/scalable/apps'] = ['bitpurse.svg', ]
     p['/usr/share/applications'] = ['bitpurse.desktop', ]
+    p['/usr/share/backup-framework/applications'] = ['bitpurse.conf',]
     p["/opt"] = files
     p["/opt/bitpurse"] = ['splash.png', ]
 

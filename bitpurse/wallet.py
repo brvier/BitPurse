@@ -64,7 +64,10 @@ class Wallet(object):
                      'priv':unicode,
                      'label':unicode,
                      'doubleEncrypted': bool,
-                     'sharedKey'},]
+                     'sharedKey':unicode},
+                     'tag':int,
+                     'balance':int,
+                     'txs:[],]
             'wallet': {'balance': int}
          }'''
 
@@ -777,4 +780,4 @@ class WalletController(QObject):
     currentPassKey = Property(unicode,
                               getCurrentPassKey,
                               setCurrentPassKey,
-                              notify=onCurrentPassKey)   
+                              notify=onCurrentPassKey)    

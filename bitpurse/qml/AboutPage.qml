@@ -19,6 +19,7 @@ Page {
     Flickable {
         anchors {
             top: header.bottom
+            topMargin: 10
             left: parent.left
             right: parent.right
             bottom: parent.bottom
@@ -54,7 +55,7 @@ Page {
                 font.pixelSize: 24
             }
             Label {
-                text: qsTr('A nice looking Bitcoin Client for MeeGo, SailfishOS, NemoMobile, and Harmattan.')
+                text: qsTr('A nice looking Bitcoin Client for MeeGo.')
                 anchors {right: parent.right; left: parent.left}
                 wrapMode: Text.WordWrap
             }
@@ -118,16 +119,6 @@ Page {
                     }
                 }
             }
-
-               /* Button {
-                    id: openTutorial
-                    width: 350; height: 50
-                    text: qsTr("Go to tutorial")
-                    onClicked: { 
-			pageStack.push(Qt.createComponent(Qt.resolvedUrl('TutorialPage.qml')));
-                    }
-                    anchors.horizontalCenter: parent.horizontalCenter
-                }*/
 
             Label {
                 text: qsTr('<b>No Blockchain</b> Download The app uses Blockchain.info api saving valuable space and bandwidth.<br><br>'

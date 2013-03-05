@@ -50,10 +50,25 @@ class Settings(QObject):
 
     def _write_default(self):
         ''' Write the default config'''
-        self.config.add_section('Security')
-        self.config.set('Security', 'storePassKey', 'false')
-        self.config.set('Security', 'passKey', '')
-        self.config.set('Security', 'useDoubleEncryption', 'false')
+        try:
+            self.config.add_section('Security')
+        except ConfigParser.DuplicateSectionError:
+            pass
+
+        try:
+            self.config.set('Security', 'storePassKey', 'false')
+        except ConfigParser.DuplicateOptionError:
+            pass
+
+        try:
+            self.config.set('Security', 'passKey', '')
+        except ConfigParser.DuplicateOptionError:
+            pass
+
+        try:
+            self.config.set('Security', 'useDoubleEncryption', 'false')
+        except ConfigParser.DuplicateOptionError:
+            pass
 
         # Writing our configuration file to 'example.cfg'
         with open(os.path.expanduser('~/.bitpurse.cfg'), 'wb') \

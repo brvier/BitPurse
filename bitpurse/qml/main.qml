@@ -120,6 +120,14 @@ PageStackWindow {
                                Qt.createComponent(
                                    Qt.resolvedUrl("AboutPage.qml")));
             }
+            
+            MenuItem { text: qsTr("Help");
+                onClicked: pageStack.push(
+                               Qt.createComponent(
+                                   Qt.resolvedUrl("HelpPage.qml")));
+            }
+
+            
             MenuItem { text: qsTr("Preferences");
                 onClicked: {
                     pageStack.push(

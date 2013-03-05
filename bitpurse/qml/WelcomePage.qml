@@ -86,6 +86,19 @@ Page {
                 opacity: busyindicatorLogin.running ? 0.0 : 1.0;
             }
 
+            Button {
+                id: helpButton
+                width: 350; height: 50
+                text: qsTr("See Help")
+                onClicked: {
+                        pageStack.push(Qt.createComponent(Qt.resolvedUrl("HelpPage.qml")))
+                }
+                anchors.right: parent.right
+                anchors.left: parent.left
+                visible: busyindicatorLogin.running ? false : true;
+                opacity: busyindicatorLogin.running ? 0.0 : 1.0;
+            }
+            
             BusyIndicator {
                 id: busyindicatorLogin
                 platformStyle: BusyIndicatorStyle { size: "large"; spinnerFrames: "image://theme/spinner"}

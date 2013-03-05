@@ -5,7 +5,7 @@ BitPurse
 **Bug Tracker :** [Bug Tracker][3]  
 **Download:** [AppsForMeego][12] - [Khertan.net][11] - [MeeGo COBS][13] - [Nokia Store][14]  
 
-A nice looking Blockchain.info Bitcoin Wallet Client for MeeGo, SailfishOS, NemoMobile, and Harmattan.
+A nice looking Bitcoin Client for MeeGo, SailfishOS, NemoMobile, and Harmattan. BitPurse allow you to manage your bitcoin address, view your balance, and emit transaction directly from your mobile device.
 
 Features
 ---------
@@ -23,12 +23,15 @@ Use open source technology Python, PySide, Qt, PyCrypto, PyPackager, Git, Python
 Screenshots
 ------------------
 
-![BitPurse Screenshot 1][4]  
-![BitPurse Screenshot 2][5]  
-![BitPurse Screenshot 3][6]  
-![BitPurse Screenshot 4][10]  
-![BitPurse Screenshot 5][16]  
-![BitPurse Screenshot 6][17]  
+![About][20]  
+![Address][21]  
+![Contextual Menu][22]  
+![Load][23]  
+![Send][24]  
+![Settings][25]  
+![Wallet][26]  
+![Welcome][27]  
+
 
 Licence
 ---------
@@ -49,3 +52,12 @@ Licenced under GPLv3.
 [14]:http://store.ovi.com/content/320976
 [16]:http://khertan.net/static/medias/bitpurse_screenshot_5.png
 [17]:http://khertan.net/static/medias/bitpurse_screenshot_6.png 
+[20]:http://khertan.net//static/medias/bitpurse_screenshot_about.png
+[21]:http://khertan.net//static/medias/bitpurse_screenshot_address.png
+[22]:http://khertan.net//static/medias/bitpurse_screenshot_contextmenu.png
+[23]:http://khertan.net//static/medias/bitpurse_screenshot_load.png
+[24]:http://khertan.net//static/medias/bitpurse_screenshot_send.png
+[25]:http://khertan.net//static/medias/bitpurse_screenshot_settings.png
+[26]:http://khertan.net//static/medias/bitpurse_screenshot_wallet.png
+[27]:http://khertan.net//static/medias/bitpurse_screenshot_welcome.png
+

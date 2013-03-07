@@ -6,8 +6,9 @@ Page {
     tools: mainTools
 
     function onTxSent(sent) {
-        if (sent)
+        if (sent) {
             amountField.text = '0.00';
+            secondPasswordField.text = '';
         busyindicatorSending.running = false;
     }
 
@@ -132,4 +133,4 @@ Page {
             }
         }
     }
-}
+} 

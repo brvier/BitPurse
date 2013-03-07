@@ -108,6 +108,8 @@ Page {
                 opacity: visible ? 1.0 : 0.0
                 echoMode: TextInput.Password
                 width: parent.width
+                //errorHighlight: !acceptableInput
+                //validator: RegExpValidator { regExp: /.+/ }
             }
 
             Button {
@@ -155,6 +157,8 @@ Page {
                 visible: Settings.useDoubleEncryption
                 opacity: visible ? 1.0 : 0.0
                 width: parent.width
+                //errorHighlight: !acceptableInput
+                //validator: RegExpValidator { regExp: /.+/ }
             }
 
             Button {
@@ -162,8 +166,7 @@ Page {
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
                     if (Settings.useDoubleEncryption) {
-                          pageStack.push(Qt.createComponent(
-                                    Qt.resolvedUrl("ExportTextPage.qml")), {text: WalletController.importFromPrivateKey(privateKey.text, keyLabel.text, keyDoubleEncryption.text)} );
+                          WalletController.importFromPrivateKey(privateKey.text, keyLabel.text, keyDoubleEncryption.text  );
                     } else {
                         WalletController.importFromPrivateKey(privateKey.text, keyLabel.text, '' );
                     }
@@ -189,6 +192,7 @@ Page {
             TitleLabel {
                 text: qsTr("See Wallet Unencrypted")
             }
+
             TextField {
                 id: seeDoubleEncryption
                 placeholderText: qsTr("Double encryption password")                
@@ -196,16 +200,22 @@ Page {
                 visible: Settings.useDoubleEncryption
                 opacity: visible ? 1.0 : 0.0
                 width: parent.width
+                //errorHighlight: !acceptableInput
+                //validator: RegExpValidator { regExp: /.+/ }
             }
+
             Button {
                 text: qsTr("View")
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
                     if (Settings.useDoubleEncryption) {
-                        pageStack.push(Qt.createComponent(
+                        if (seeDoubleEncryption.text != '') {
+                            pageStack.push(Qt.createComponent(
                                     Qt.resolvedUrl("ExportTextPage.qml")), {text:
                                     WalletController.exportDecryptedAsText(seeDoubleEncryption.text)});
-                        seeDoubleEncryption.text = '';
+                            seeDoubleEncryption.text = ''; }
+                        else { 
+                        seeDoubleEncryption.errorHighlight = true; }             
                     } else {
                         pageStack.push(Qt.createComponent(
                                     Qt.resolvedUrl("ExportTextPage.qml")), {text:
@@ -222,4 +232,4 @@ Page {
         platformStyle: ScrollDecoratorStyle {
         }}
 
-}         
+}               

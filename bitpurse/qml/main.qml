@@ -114,7 +114,7 @@ PageStackWindow {
             }
 
             
-            MenuItem { text: qsTr("Preferences");
+            MenuItem { text: qsTr("Settings");
                 onClicked: {
                     pageStack.push(
                                 Qt.createComponent(
@@ -166,4 +166,4 @@ PageStackWindow {
             }
         }
     ]
-}     
+}      

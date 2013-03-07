@@ -8,7 +8,7 @@ Page {
     Header{
         id:header
         source: Qt.resolvedUrl('bitcoin.svg')
-        title: qsTr('Preferences')
+        title: qsTr('Settings')
         color: '#666666'
     }
 
@@ -120,6 +120,7 @@ Page {
                                     blockchainKey.text,
                                     blockchainSecondKey.text,
                                     blockchainDoubleEncryption.text);
+                            blockchainDoubleEncryption.text = '';
                         } else {
                             WalletController.importFromBlockchainInfoWallet(
                                     blockchainGuid.text,
@@ -161,7 +162,8 @@ Page {
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
                     if (Settings.useDoubleEncryption) {
-                        WalletController.importFromPrivateKey(privateKey.text, keyLabel.text, keyDoubleEncryption.text);
+                          pageStack.push(Qt.createComponent(
+                                    Qt.resolvedUrl("ExportTextPage.qml")), {text: WalletController.importFromPrivateKey(privateKey.text, keyLabel.text, keyDoubleEncryption.text)} );
                     } else {
                         WalletController.importFromPrivateKey(privateKey.text, keyLabel.text, '' );
                     }
@@ -183,6 +185,35 @@ Page {
                     WalletController.exportWithShareUI();
                 }
             }
+
+            TitleLabel {
+                text: qsTr("See Wallet Unencrypted")
+            }
+            TextField {
+                id: seeDoubleEncryption
+                placeholderText: qsTr("Double encryption password")                
+                echoMode: TextInput.Password
+                visible: Settings.useDoubleEncryption
+                opacity: visible ? 1.0 : 0.0
+                width: parent.width
+            }
+            Button {
+                text: qsTr("View")
+                anchors.horizontalCenter: parent.horizontalCenter
+                onClicked: {
+                    if (Settings.useDoubleEncryption) {
+                        pageStack.push(Qt.createComponent(
+                                    Qt.resolvedUrl("ExportTextPage.qml")), {text:
+                                    WalletController.exportDecryptedAsText(seeDoubleEncryption.text)});
+                        seeDoubleEncryption.text = '';
+                    } else {
+                        pageStack.push(Qt.createComponent(
+                                    Qt.resolvedUrl("ExportTextPage.qml")), {text:
+                                    WalletController.exportDecryptedAsText('')});
+                    }
+                }
+            }
+
         }
     }
 
@@ -191,4 +222,4 @@ Page {
         platformStyle: ScrollDecoratorStyle {
         }}
 
-}    
+}         

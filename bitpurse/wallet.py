@@ -193,6 +193,27 @@ class Wallet(object):
         # TODO
         pass
 
+
+    def exportDecryptedAsText(self, secondPass):
+        if secondPass:
+            self.testDoublePK(secondPass)
+
+        txt = ('Uncrypted wallet export\n'
+               '-----------------------\n\n')
+        for addr in self.addresses:
+            txt += 'Label: %s\n' % addr.label
+            txt += 'Address: %s\n' % addr.addr
+            if addr.doubleEncrypted:
+                pk = self.decryptPK(addr.priv, secondPass,
+                                    addr.sharedKey)
+            else:
+                pk = addr.priv
+            txt += 'Private Key: %s\n\n' % pk
+
+
+        return txt
+        
+
     def importFromPrivateKey(self, passKey, privateKey,
                              label='Undefined', doubleKey=''):
 
@@ -473,6 +494,15 @@ class WalletController(QObject):
             self.update()
         except (WrongPassword, DataError), err:
             self.onError.emit(unicode(err))
+
+    @Slot(unicode, result = unicode)
+    def exportDecryptedAsText(self, doubleKey):
+        try:
+            return self._wallet.exportDecryptedAsText(doubleKey)
+            
+        except (WrongPassword, DataError), err:
+            self.onError.emit(unicode(err))
+            return ''
 
     @Slot(result=bool)
     def walletExists(self,):
@@ -791,4 +821,4 @@ class WalletController(QObject):
     currentPassKey = Property(unicode,
                               getCurrentPassKey,
                               setCurrentPassKey,
-                              notify=onCurrentPassKey)       
+                              notify=onCurrentPassKey)          

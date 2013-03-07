@@ -33,7 +33,7 @@ Dialog {
             anchors.centerIn: parent
             spacing: 10
  
-            ToolButton {
+            Button {
                 id: btOk
                 text: qsTr( "Ok" )
                 onClicked: {
@@ -124,4 +124,4 @@ Dialog {
         hintArea.text  = msg
         hintArea.state = "Show"
     }
-}  
+}   

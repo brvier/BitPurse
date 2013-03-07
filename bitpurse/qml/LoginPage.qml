@@ -41,6 +41,7 @@ Page {
             text: WalletController.currentPassKey
             anchors.right: parent.right
             anchors.left: parent.left
+            echoMode: TextInput.Password
         }
 
         Button {
@@ -72,4 +73,4 @@ Page {
     }
 }
 
-} 
+}  

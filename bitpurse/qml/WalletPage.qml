@@ -178,4 +178,34 @@ Page {
         }
     }
 
-}     
+    PasswordDialog {
+
+        id: createAddrDialog
+        
+        onAccepted: {
+            WalletController.newAddr(passwd);
+        }
+    }
+
+    ToolBarLayout {
+        id: walletTools
+        visible: false
+
+        ToolIcon {
+            platformIconId: "toolbar-add"
+            onClicked: {
+                 if (!Settings.useDoubleEncryption) {
+                      WalletController.newAddr('');}
+                 else {
+                      createAddrDialog.launch();
+                 }
+           }
+        }
+        
+        ToolIcon {
+            platformIconId: "toolbar-view-menu"
+            anchors.right: parent.right
+            onClicked: (mainMenu.status === DialogStatus.Closed) ? mainMenu.open() : mainMenu.close()
+        }
+    }
+}        

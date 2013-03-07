@@ -49,12 +49,20 @@ class Wallet(object):
         self.balance = 0
         self.settings = Settings()
 
-    def createAddr(self, ):
+    def createAddr(self, doubleKey):
+        if doubleKey:
+            self.testDoublePK(doubleKey)
+            
         # eckey = EC_KEY(int(os.urandom(32).encode('hex'), 16))
         pk = EC_KEY(int(os.urandom(32).encode('hex'), 16))
         addr = Address()
         addr.priv = SecretToASecret(getSecret(pk), True)
         addr.addr = getAddrFromPrivateKey(addr.priv)
+        addr.sharedKey = 'BitPurse'
+        if doubleKey:
+            addr.priv = self.encryptPK(addr.priv, doubleKey, addr.sharedKey)
+            addr.doubleEncrypted = True
+
         self.addresses.append(addr)
 
     def load_addresses(self, passKey):
@@ -457,11 +465,14 @@ class WalletController(QObject):
             self._currentPassKey = None
         self._currentAddressIndex = 0
 
-    @Slot()
-    def newAddr(self):
-        self._wallet.createAddr()
-        self.storeWallet()
-        self.update()
+    @Slot(unicode)
+    def newAddr(self, doubleKey):
+        try:
+            self._wallet.createAddr(doubleKey)
+            self.storeWallet()
+            self.update()
+        except (WrongPassword, DataError), err:
+            self.onError.emit(unicode(err))
 
     @Slot(result=bool)
     def walletExists(self,):
@@ -780,4 +791,4 @@ class WalletController(QObject):
     currentPassKey = Property(unicode,
                               getCurrentPassKey,
                               setCurrentPassKey,
-                              notify=onCurrentPassKey)    
+                              notify=onCurrentPassKey)       

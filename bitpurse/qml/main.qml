@@ -74,21 +74,7 @@ PageStackWindow {
         }
     }
 
-    ToolBarLayout {
-        id: walletTools
-        visible: false
-
-        ToolIcon {
-            platformIconId: "toolbar-add"
-            onClicked: {WalletController.newAddr();}
-        }
-        
-        ToolIcon {
-            platformIconId: "toolbar-view-menu"
-            anchors.right: parent.right
-            onClicked: (mainMenu.status === DialogStatus.Closed) ? mainMenu.open() : mainMenu.close()
-        }
-    }
+    
 
     ToolBarLayout {
         id: backTools
@@ -180,4 +166,4 @@ PageStackWindow {
             }
         }
     ]
-}    
+}     

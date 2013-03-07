@@ -8,7 +8,7 @@ Page {
     function onTxSent(sent) {
         if (sent) {
             amountField.text = '0.00';
-            secondPasswordField.text = '';
+            secondPasswordField.text = ''; }
         busyindicatorSending.running = false;
     }
 

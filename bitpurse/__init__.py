@@ -25,7 +25,7 @@ import os.path
 
 __author__ = 'Benoit HERVIER (Khertan)'
 __email__ = 'khertan@khertan.net'
-__version__ = '1.5.0'
+__version__ = '1.6.0'
 __build__ = '1'
 __upgrade__ = '''0.9.0: First beta release
 0.9.1: Second beta release, add missing python-crypto dependancy
@@ -33,6 +33,9 @@ __upgrade__ = '''0.9.0: First beta release
 0.9.3: Fix error due to API changes of BlockChain.info
 1.5.0: Rewrite to be independant of BlockChain.info my wallet service, but
        still use BlockChain.info API to get blockchain informations
+1.6.0: add an unEncrypted view of wallet address and private key
+       Fix new address creation with double encrypted key 
+       Fix for clearing second password after successfully emitting a transaction 
 '''
 
 

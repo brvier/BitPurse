@@ -5,3 +5,6 @@ Type=Application
 Name=BitPurse
 Exec=/usr/bin/invoker --splash=/opt/bitpurse/splash.png --type=e --single-instance /opt/bitpurse/__init__.py
 Icon=bitpurse
+MimeType=x-maemo-urischeme/bitcoin;
+X-Maemo-Service=net.khertan.bitpurse
+X-Maemo-Method=net.khertan.bitpurse.sendWithLink

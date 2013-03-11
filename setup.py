@@ -39,7 +39,7 @@ setup(name='bitpurse',
       requires=['python', 'pyside', 'pycrypto'],
 
 
-      data_files=[('/usr/share/dbus-1/services', ['bitpurse.service']),
+      data_files=[('/usr/share/dbus-1/services', ['net.khertan.bitpurse.service']),
                   ('/usr/share/applications/', ['bitpurse.desktop']),
                   ('/usr/share/icons/hicolor/80x80/apps', ['bitpurse.png']),
                   ('/usr/share/icons/hicolor/128x128/apps',
@@ -47,5 +47,4 @@ setup(name='bitpurse',
                   ('/usr/share/icons/hicolor/64x64/apps', ['bitpurse_64.png']),
                   ('/usr/share/icons/hicolor/scalable/apps', ['bitpurse.svg']),
                   ] + files,
-      )
-
+      ) 

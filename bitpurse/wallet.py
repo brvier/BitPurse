@@ -581,15 +581,15 @@ class WalletController(QObject):
         item = '%s'%link
         share([item,])
 
-    @Slot(unicode, unicode, unicode)
-    def importFromBlockchainInfoWallet(self, guid, key, skey):
+    @Slot(unicode, unicode, unicode, unicode)
+    def importFromBlockchainInfoWallet(self, guid, key, skey, dkey):
         if self.thread:
             if self.thread.isAlive():
                 self.onError.emit(
                     u'Please wait, a communication is already in progress')
         self.thread = threading.Thread(None,
                                        self._importFromBlockchainInfoWallet,
-                                       None, (guid, key, skey))
+                                       None, (guid, key, skey, dkey))
         self.thread.start()
 
     @Slot(unicode, unicode, unicode)
@@ -613,7 +613,7 @@ class WalletController(QObject):
         self.onBusy.emit()
         try:
             self._wallet.importFromBlockchainInfoWallet(self._currentPassKey,
-                                                        guid, key, skey)
+                                                        guid, key, skey, doubleKey)
             self.storeWallet()
             self._update()
         except Exception, err:
@@ -821,4 +821,4 @@ class WalletController(QObject):
     currentPassKey = Property(unicode,
                               getCurrentPassKey,
                               setCurrentPassKey,
-                              notify=onCurrentPassKey)          
+                              notify=onCurrentPassKey)           

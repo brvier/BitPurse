@@ -25,7 +25,7 @@ import os.path
 
 __author__ = 'Benoit HERVIER (Khertan)'
 __email__ = 'khertan@khertan.net'
-__version__ = '1.6.0'
+__version__ = '1.7.0'
 __build__ = '1'
 __upgrade__ = '''0.9.0: First beta release
 0.9.1: Second beta release, add missing python-crypto dependancy
@@ -36,6 +36,7 @@ __upgrade__ = '''0.9.0: First beta release
 1.6.0: add an unEncrypted view of wallet address and private key
        Fix new address creation with double encrypted key 
        Fix for clearing second password after successfully emitting a transaction 
+1.7.0: Fix a bug in blockchain.info mywallet import
 '''
 
 
@@ -99,4 +100,4 @@ class BitPurse(QApplication):
 
 
 if __name__ == '__main__':
-    sys.exit(BitPurse().exec_())
+    sys.exit(BitPurse().exec_()) 

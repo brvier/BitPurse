@@ -18,10 +18,14 @@ from PySide.QtCore import QUrl, QObject
 from PySide import QtDeclarative
 from PySide.QtOpenGL import QGLWidget, QGLFormat
 from wallet import WalletController
-from settings import Settings
 import sys
 import os
 import os.path
+#from dbusproxy import DBusProxy
+#from dbus.service import BusName
+#import python dbus GLib mainloop support
+#import dbus.mainloop.glib
+#dbus_main_loop = dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
 __author__ = 'Benoit HERVIER (Khertan)'
 __email__ = 'khertan@khertan.net'
@@ -36,7 +40,7 @@ __upgrade__ = '''0.9.0: First beta release
 1.6.0: add an unEncrypted view of wallet address and private key
        Fix new address creation with double encrypted key 
        Fix for clearing second password after successfully emitting a transaction 
-1.7.0: Fix a bug in blockchain.info mywallet import
+1.7.0: Fix a bug in blockchain.info mywallet import, add bitcoin:// url scheme support
 '''
 
 
@@ -92,12 +96,27 @@ class BitPurse(QApplication):
             self.view.show()
         # self.loginPage = self.rootObject.findChild(QObject, "loginPage")
         self.sendPage = self.rootObject.findChild(QObject, "sendPage")
+        #session_bus = dbus.SessionBus(dbus_main_loop)
+        #bus_name = dbus.service.BusName('net.khertan.bitpurse', bus=session_bus)
+		
+        #self.dbusproxy = DBusProxy(self.rootObject.sendTo, bus_name)
         self.aboutPage = self.rootObject.findChild(QObject, "aboutPage")
         self.walletController.onError.connect(self.rootObject.onError)
         # self.walletController.onConnected.connect(self.loginPage.onConnected)
         self.walletController.onTxSent.connect(self.sendPage.onTxSent)
         # self.walletController.onTxSent.connect(self.aboutPage.onTxSent)
-
+        if len(sys.argv) >= 2:
+            if sys.argv[1].startswith('bitcoin:'):
+                params = sys.argv[1][8:].split('?')
+                addr = params[0].strip('/')
+                amount = 0
+                if params > 1:
+                    for param in params:
+                        if param.startswith('amount='):
+                            if len(param.split('=')) > 1:
+                                amount = param.split('=')[1]
+                            
+                self.rootObject.sendTo(addr, amount)
 
 if __name__ == '__main__':
-    sys.exit(BitPurse().exec_()) 
+    sys.exit(BitPurse().exec_())      

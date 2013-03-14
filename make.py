@@ -83,7 +83,7 @@ exit 0'''
             files.append(os.path.join(root, f))
 
     # files.append(os.path.join(os.path.dirname(__file__), 'bitpurse.png'))
-    p['/usr/share/dbus-1/services'] = ['net.khertan.bitpurse.service', ]
+    #p['/usr/share/dbus-1/services'] = ['net.khertan.bitpurse.service', ]
     p['/usr/share/icons/hicolor/80x80/apps'] = ['bitpurse.png', ]
     p['/usr/share/icons/hicolor/64x64/apps'] = ['bitpurse_64.png', ]
     p['/usr/share/icons/hicolor/128x128/apps'] = ['bitpurse_128.png', ]

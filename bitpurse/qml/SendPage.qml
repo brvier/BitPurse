@@ -4,6 +4,8 @@ import com.nokia.meego 1.0
 Page {
 
     tools: mainTools
+    property alias sendTo: addressField.text
+    property alias amount: amountField.text
 
     function onTxSent(sent) {
         if (sent) {
@@ -133,4 +135,4 @@ Page {
             }
         }
     }
-} 
+}  

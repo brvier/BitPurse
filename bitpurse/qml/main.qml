@@ -7,6 +7,10 @@ PageStackWindow {
 
     initialPage: WalletController.walletExists() ? ((WalletController.walletUnlocked) ? walletPage : loginPage) : welcomePage
     
+    function sendTo(addr, amount) {
+        if (WalletController.walletUnlocked)
+            pageStack.push(sendPage, {sendTo:addr, amount:amount})
+    }
     function changePage(page) {
         if (pageStack.currentPage.objectName !== page.objectName) {
             pageStack.replace(page);
@@ -166,4 +170,4 @@ PageStackWindow {
             }
         }
     ]
-}      
+}        

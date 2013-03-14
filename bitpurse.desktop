@@ -3,8 +3,6 @@ Encoding=UTF-8
 Version=1.0
 Type=Application
 Name=BitPurse
-Exec=/usr/bin/invoker --splash=/opt/bitpurse/splash.png --type=e --single-instance /opt/bitpurse/__init__.py
+Exec=/usr/bin/invoker --splash=/opt/bitpurse/splash.png --type=e --single-instance /opt/bitpurse/__init__.py %U
 Icon=bitpurse
 MimeType=x-maemo-urischeme/bitcoin;
-X-Maemo-Service=net.khertan.bitpurse
-X-Maemo-Method=net.khertan.bitpurse.sendWithLink

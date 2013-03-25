@@ -13,7 +13,7 @@ PageStackWindow {
     }
     function changePage(page) {
         if (pageStack.currentPage.objectName !== page.objectName) {
-            pageStack.replace(page);
+            pageStack.push(page);
         }
     }
 
@@ -58,12 +58,15 @@ PageStackWindow {
         visible: false
 
         ToolIcon {
-            platformIconId: "toolbar-home"
+            platformIconId: "toolbar-back"
             onClicked: {pageStack.pop(); WalletController.update();}
         }
 
         ToolIcon {
             platformIconId: "toolbar-up"
+            enabled: WalletController.currentWatchOnly ? false : true;
+            visible: enabled
+            opacity: enabled ? 1.0 : 0.0
             onClicked: {changePage(sendPage);}
         }
 
@@ -94,6 +97,21 @@ PageStackWindow {
         id: simpleTools
         visible: false
 
+        ToolIcon {
+            platformIconId: "toolbar-view-menu"
+            anchors.right: parent.right
+            onClicked: (mainMenu.status === DialogStatus.Closed) ? mainMenu.open() : mainMenu.close()
+        }
+    }
+
+    ToolBarLayout {
+        id: simpleBackTools
+        visible: false
+
+        ToolIcon {
+            platformIconId: "toolbar-back"
+            onClicked: {pageStack.pop();}
+        }
         ToolIcon {
             platformIconId: "toolbar-view-menu"
             anchors.right: parent.right
@@ -170,4 +188,4 @@ PageStackWindow {
             }
         }
     ]
-}        
+}              

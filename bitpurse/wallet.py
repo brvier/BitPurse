@@ -141,9 +141,10 @@ class Wallet(object):
         return unpadding(cipher.decrypt(data[16:]))
 
     def doubleEncryptPrivKeys(self, secondPass):
-        if any([addr.doubleEncrypted is True for addr in self.addresses]):
+        if any([addr.doubleEncrypted is True for addr in self.addresses
+                if not addr.watchOnly]):
             raise DataError('Some keys are already double encrypted')
-        for addr in self.addresses:
+        for addr in [address for address in self.addresses if not address.watchOnly]:
             oldpk = addr.priv
             if addr.sharedKey is None:
                 addr.sharedKey = 'BitPurse'
@@ -173,12 +174,13 @@ class Wallet(object):
             raise DataError('Double Password didn\'t match with other keys')
 
     def doubleDecryptPrivKeys(self, secondPass):
-        if any([addr.doubleEncrypted is False for addr in self.addresses]):
+        if any([addr.doubleEncrypted is False for addr in self.addresses
+                if not addr.watchOnly ]):
             raise DataError('Some keys are not double encrypted')
 
         self.testDoublePK(secondPass)
 
-        for addr in self.addresses:
+        for addr in [address for address in self.addresses if not address.watchOnly]:
             if addr.sharedKey is None:
                 addr.sharedKey = 'BitPurse'
             addr.priv = self.decryptPK(addr.priv, secondPass,
@@ -208,11 +210,23 @@ class Wallet(object):
                                     addr.sharedKey)
             else:
                 pk = addr.priv
-            txt += 'Private Key: %s\n\n' % pk
-
+            if not addr.watchOnly:
+                txt += 'Private Key: %s\n\n' % pk
+            else:
+                txt+= 'Watch only\n\n'
 
         return txt
         
+    def importWatchOnly(self, passKey, address, label ='Undefined'):
+        addr = Address()
+        addr.addr = address
+        addr.sharedKey = 'BitPurse'
+        addr.watchOnly = True
+        addr.priv = ''
+        addr.label = label
+
+        self.addresses.append(addr)
+        self.store(passKey)
 
     def importFromPrivateKey(self, passKey, privateKey,
                              label='Undefined', doubleKey=''):
@@ -461,6 +475,7 @@ class WalletController(QObject):
     onCurrentAddress = Signal()
     onCurrentDoubleEncrypted = Signal()
     onCurrentPassKey = Signal()
+    onCurrentWatchOnly = Signal()
 
     def __init__(self,):
         QObject.__init__(self,)
@@ -514,9 +529,10 @@ class WalletController(QObject):
 
     @Slot(unicode)
     def createWallet(self, passKey):
+        self.settings.doubleEncryption = False
         self._currentPassKey = passKey
         self._walletUnlocked = True
-        self._wallet.createAddr()
+        self._wallet.createAddr(None)
         self._wallet.store(passKey)
         self.update()
 
@@ -552,6 +568,13 @@ class WalletController(QObject):
                 self._currentAddressIndex].addr
         except IndexError:
             return ''
+
+    def getCurrentWatchOnly(self):
+        try:
+            return self._wallet.addresses[self._currentAddressIndex] \
+                .watchOnly
+        except IndexError:
+            return False
 
     def getCurrentDoubleEncrypted(self):
         try:
@@ -626,6 +649,36 @@ class WalletController(QObject):
     @Slot(unicode, result=bool)
     def doubleEncrypt(self, doubleKey):
         return self._doubleEncrypt(doubleKey)
+
+    @Slot(unicode, unicode)
+    def importWatchOnly(self, addr,
+                             label='Undefined'):
+        try:
+            self._wallet.importWatchOnly(self._currentPassKey,
+                                         addr,
+                                         label)
+            self.storeWallet()
+            self.onError.emit('Address imported')
+            self.update()
+        except Exception, err:
+            print err
+            import traceback
+            traceback.print_exc()
+            self.onError.emit(unicode(err))
+
+    def _importFromBlockchainInfoWallet(self, guid, key, skey, doubleKey):
+        self.onBusy.emit()
+        try:
+            self._wallet.importFromBlockchainInfoWallet(self._currentPassKey,
+                                                        guid, key, skey, doubleKey)
+            self.storeWallet()
+            self._update()
+        except Exception, err:
+            print err
+            import traceback
+            traceback.print_exc()
+            self.onError.emit(unicode(err))
+        self.onBusy.emit()
 
     def _doubleEncrypt(self, doubleKey):
         self.onBusy.emit()
@@ -778,6 +831,7 @@ class WalletController(QObject):
             self.onCurrentBalance.emit()
             self.onCurrentLabel.emit()
             self.onCurrentAddress.emit()
+            self.onCurrentWatchOnly.emit()
             try:
                 self.transactionsModel.setData(
                     self._wallet.addresses[self._currentAddressIndex]
@@ -802,6 +856,8 @@ class WalletController(QObject):
     def putAddrInClipboard(self, addr):
         QApplication.clipboard().setText(addr, QClipboard.Clipboard)
 
+    currentWatchOnly = Property(bool, getCurrentWatchOnly,
+                                      notify=onCurrentWatchOnly)
     currentDoubleEncrypted = Property(bool, getCurrentDoubleEncrypted,
                                       notify=onCurrentDoubleEncrypted)
     busy = Property(bool, isBusy,
@@ -821,4 +877,4 @@ class WalletController(QObject):
     currentPassKey = Property(unicode,
                               getCurrentPassKey,
                               setCurrentPassKey,
-                              notify=onCurrentPassKey)           
+                              notify=onCurrentPassKey)                 

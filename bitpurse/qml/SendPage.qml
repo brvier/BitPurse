@@ -3,7 +3,7 @@ import com.nokia.meego 1.0
 
 Page {
 
-    tools: mainTools
+    tools: simpleBackTools
     property alias sendTo: addressField.text
     property alias amount: amountField.text
 
@@ -135,4 +135,4 @@ Page {
             }
         }
     }
-}  
+}   

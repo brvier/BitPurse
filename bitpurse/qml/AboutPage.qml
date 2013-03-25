@@ -70,9 +70,9 @@ Page {
                     rightMargin: 10
                 }
 
-                BitCoinField {
+                /*BitCoinField {
                     id:donateField
-                    text: '1.000000'
+                    text: '0.100000'
                     anchors.right: parent.right
                     anchors.left: parent.left
                 }
@@ -84,28 +84,30 @@ Page {
                 visible: WalletController.currentDoubleEncrypted ? true : false
                 anchors.right: parent.right
                 anchors.left: parent.left
-            }
+            }*/
                 Button {
                     id: sendButton
                     width: 350; height: 50
                     text: qsTr("Donate")
-                    onClicked: { WalletController.sendFromCurrent(
+                    onClicked: { /*WalletController.sendFromCurrent(
                         '1H1QjfoANoATk1yAsCHmqbPChmQtogPpvv',
                         donateField.text,
                         '0.0005',
-                        donatePassword.text);
+                        donatePassword.text);*/
+                        //pageStack.pop();
+                        sendTo('1H1QjfoANoATk1yAsCHmqbPChmQtogPpvv', '0.01');
                     }
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
 
-            BusyIndicator {
+            /*BusyIndicator {
                 id: busyindicatorSending
                 platformStyle: BusyIndicatorStyle { size: "large"; spinnerFrames: "image://theme/spinner"}
                 running: false;
                 opacity: running ? 1.0 : 0.0;
                 visible: running ? true : false;
                 anchors.horizontalCenter: parent.horizontalCenter
-            }            }
+            }  */          }
 
             Label {
                 text: qsTr('By Benoit HERVIER<br>Licenced under GPLv3.<br>http://khertan.net/BitPurse')
@@ -166,4 +168,4 @@ Page {
             }
         }
     }
-}   
+}      

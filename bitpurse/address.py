@@ -31,6 +31,7 @@ class Address(object):
         self.doubleEncrypted = False
         self.sharedKey = unicode(uuid4())
         self.transactions = []
+        self.watchOnly = False
 
         try:
             self.addr = jsondict['addr']
@@ -62,6 +63,12 @@ class Address(object):
             pass
 
         try:
+            self.watchOnly = jsondict['watchOnly']
+        except KeyError:
+            pass
+        print self.watchOnly
+
+        try:
             for tx in jsondict['txs']:
                 self.transactions.append(TransactionHist(tx['hash'],
                                                          tx['timestamp'],
@@ -79,6 +86,7 @@ class Address(object):
                 'label': self.label,
                 'sharedKey': self.sharedKey,
                 'balance': self.balance,
+                'watchOnly': self.watchOnly,
                 'txs': [{'hash': tx.hash,
                          'timestamp': tx.timestamp,
                          'amount': tx.amount,
@@ -165,4 +173,4 @@ class TransactionHist(object):
                             .strftime('%c'), 'utf-8')
         self.address = address
         self.amount = amount
-        self.confirmations = confirmations
+        self.confirmations = confirmations  

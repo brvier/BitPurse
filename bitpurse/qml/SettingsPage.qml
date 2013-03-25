@@ -176,6 +176,37 @@ Page {
                     keyDoubleEncryption.text = '';
                 }
             }
+            TitleLabel {
+                text: qsTr("Import watch only address")
+            }
+
+            TextField {
+                id: watchAddress
+                placeholderText: qsTr("Address")
+                echoMode: TextInput.Password
+                width: parent.width
+            }
+
+            TextField {
+                id: watchLabel
+                placeholderText: qsTr("Label")
+                
+                width: parent.width
+            }
+
+
+            Button {
+                text: qsTr('Import')
+                anchors.horizontalCenter: parent.horizontalCenter
+                onClicked: {
+                    WalletController.importWatchOnly(watchAddress.text, watchLabel.text  );
+                    
+
+                    watchAddress.text = '';
+                    watchLabel.text = '';
+                    
+                }
+            }
 
             TitleLabel {
                 text: qsTr("Export Wallet Encrypted")
@@ -232,4 +263,4 @@ Page {
         platformStyle: ScrollDecoratorStyle {
         }}
 
-}               
+}                

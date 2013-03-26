@@ -29,7 +29,7 @@ import os.path
 
 __author__ = 'Benoit HERVIER (Khertan)'
 __email__ = 'khertan@khertan.net'
-__version__ = '1.7.0'
+__version__ = '1.8.0'
 __build__ = '1'
 __upgrade__ = '''0.9.0: First beta release
 0.9.1: Second beta release, add missing python-crypto dependancy
@@ -41,7 +41,7 @@ __upgrade__ = '''0.9.0: First beta release
        Fix new address creation with double encrypted key 
        Fix for clearing second password after successfully emitting a transaction 
 1.7.0: Fix a bug in blockchain.info mywallet import, add bitcoin:// url scheme support
-'''
+1.8.0: Add watch only address (addr without priv key)'''
 
 
 class BitPurse(QApplication):
@@ -117,6 +117,9 @@ class BitPurse(QApplication):
                                 amount = param.split('=')[1]
                             
                 self.rootObject.sendTo(addr, amount)
+        if self.walletController.settings.numberOfLaunch == 25:
+            self.rootObject.showDonation()
+        self.walletController.settings.numberOfLaunch += 1
 
 if __name__ == '__main__':
-    sys.exit(BitPurse().exec_())      
+    sys.exit(BitPurse().exec_())         

@@ -7,6 +7,10 @@ PageStackWindow {
 
     initialPage: WalletController.walletExists() ? ((WalletController.walletUnlocked) ? walletPage : loginPage) : welcomePage
     
+    function showDonation() { 
+        pageStack.push(Qt.createComponent(
+                                   Qt.resolvedUrl("DonationPage.qml"))); 
+    }
     function sendTo(addr, amount) {
         if (WalletController.walletUnlocked)
             pageStack.push(sendPage, {sendTo:addr, amount:amount})
@@ -188,4 +192,4 @@ PageStackWindow {
             }
         }
     ]
-}              
+}                

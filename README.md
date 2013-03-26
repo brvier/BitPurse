@@ -18,6 +18,8 @@ Features
 
 **100% Free and Open source**
 
+**Backup wallet** with Harmattan Backup
+
 Use open source technology Python, PySide, Qt, PyCrypto, PyPackager, Git, Python ECDSA module, and Python PBKDF2 module . The source can be found on my github repository and are licenced under GPLv3
 
 Screenshots
@@ -59,5 +61,4 @@ Licenced under GPLv3.
 [24]:http://khertan.net//static/medias/bitpurse_screenshot_send.png
 [25]:http://khertan.net//static/medias/bitpurse_screenshot_settings.png
 [26]:http://khertan.net//static/medias/bitpurse_screenshot_wallet.png
-[27]:http://khertan.net//static/medias/bitpurse_screenshot_welcome.png
-
+[27]:http://khertan.net//static/medias/bitpurse_screenshot_welcome.png 

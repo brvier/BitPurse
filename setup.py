@@ -26,10 +26,10 @@ for root, dirs, filenames in os.walk(os.path.join(os.path.dirname(__file__),
 print files
 
 setup(name='bitpurse',
-      version='0.9.1',
+      version='1.8.0',
       license='GNU GPLv3',
       description='A nice looking Blockchain.info Bitcoin Wallet Client',
-      long_description=("A nice looking Blockchain.info Bitcoin Wallet client"
+      long_description=("A nice looking Bitcoin Wallet client"
                         " for MeeGo, SailfishOS, NemoMobile, and Harmattan."),
       author=u'Benoît HERVIER',
       author_email='khertan@khertan.net',
@@ -47,4 +47,4 @@ setup(name='bitpurse',
                   ('/usr/share/icons/hicolor/64x64/apps', ['bitpurse_64.png']),
                   ('/usr/share/icons/hicolor/scalable/apps', ['bitpurse.svg']),
                   ] + files,
-      ) 
+      )  

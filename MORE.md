@@ -15,7 +15,8 @@ Wallet is stored locally in a json file in ~/.bitpurse.wallet
                      'sharedKey':unicode},
                      'tag':int,
                      'balance':int,
-                     'txs:[],]
+                     'txs:[],
+                     'watchOnly: bool]
             'wallet': {'balance': int}
 }
 ~~~~
@@ -38,4 +39,4 @@ Your private keys is never shared with any services, except if you choose to exp
 Security
 --------
 
-If you use the encryption and didn't want to enter your password each time you load BitPurse, you can use double encryption, your wallet will be stored encrypted, but will be decrypted in memory at startup. With double encryption the private key remains crypted, so without knowing second password, noone can use your phone to emit transactions.    
+If you use the encryption and didn't want to enter your password each time you load BitPurse, you can use double encryption, your wallet will be stored encrypted, but will be decrypted in memory at startup. With double encryption the private key remains crypted, so without knowing second password, noone can use your phone to emit transactions.     

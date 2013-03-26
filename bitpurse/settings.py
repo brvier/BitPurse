@@ -41,6 +41,8 @@ class Settings(QObject):
             print 'Missing prefs'
             self._write_default()
         self.config.read(os.path.expanduser('~/.bitpurse.cfg'))
+        if 'General' not in self.config.sections():
+            self.config.add_section('General')
         if 'usedoubleencryption' not in self.config.options('Security'):
             self._write_default()
         elif 'passkey' not in self.config.options('Security'):
@@ -125,6 +127,15 @@ class Settings(QObject):
         self._set('passKey', passKey)
         self.on_passKey.emit()
 
+    def _get_numberOfLaunch(self,):
+        try:
+            return int(self.get('numberOfLaunch'))
+        except:
+            return 0
+
+    def _set_numberOfLaunch(self, value):
+        self._set('numberOfLaunch', str(value))
+
     def _set_useDoubleEncryption(self, b):
         self._set('useDoubleEncryption', 'true' if b else 'false')
         self.on_useDoubleEncryption.emit()
@@ -132,6 +143,9 @@ class Settings(QObject):
     on_storePassKey = Signal()
     on_passKey = Signal()
     on_useDoubleEncryption = Signal()
+    on_numberOfLaunch = Signal ()
+    numberOfLaunch = Property(int, _get_numberOfLaunch, _set_numberOfLaunch,
+                              notify = on_numberOfLaunch)
     storePassKey = Property(bool, _get_storePassKey, _set_storePassKey,
                             notify=on_storePassKey)
     passKey = Property(unicode, _get_passKey,
@@ -139,4 +153,4 @@ class Settings(QObject):
     useDoubleEncryption = Property(bool,
                                    _get_useDoubleEncryption,
                                    _set_useDoubleEncryption,
-                                   notify=on_useDoubleEncryption)
+                                   notify=on_useDoubleEncryption)    

@@ -25,15 +25,12 @@ Use open source technology Python, PySide, Qt, PyCrypto, PyPackager, Git, Python
 Screenshots
 ------------------
 
-![About][20]  
-![Address][21]  
-![Contextual Menu][22]  
-![Load][23]  
-![Send][24]  
-![Settings][25]  
-![Wallet][26]  
-![Welcome][27]  
-
+![Screenshot][4]  
+![Screenshot][5]  
+![Screenshot][6]  
+![Screenshot][10]  
+![Screenshot][16]  
+![Screenshot][17]    
 
 Licence
 ---------
@@ -61,4 +58,4 @@ Licenced under GPLv3.
 [24]:http://khertan.net//static/medias/bitpurse_screenshot_send.png
 [25]:http://khertan.net//static/medias/bitpurse_screenshot_settings.png
 [26]:http://khertan.net//static/medias/bitpurse_screenshot_wallet.png
-[27]:http://khertan.net//static/medias/bitpurse_screenshot_welcome.png 
+[27]:http://khertan.net//static/medias/bitpurse_screenshot_welcome.png  

@@ -8,7 +8,7 @@ Page {
     
     Header{
         id:header
-        source: Qt.resolvedUrl('bitcoin.svg')
+        source: Qt.resolvedUrl('bitpurse.svg')
         title: qsTr('Help')
         color: '#666666'
     }

@@ -22,7 +22,7 @@ from datetime import datetime
 class Address(object):
 
     def __init__(self, jsondict={}):
-        #QObject.__init__(self,)
+        # QObject.__init__(self,)
         self.addr = ''
         self.label = 'Undefined'
         self.priv = ''
@@ -165,7 +165,7 @@ class TransactionsModel(QAbstractListModel):
 
 class TransactionHist(object):
     def __init__(self, txhash, timestamp, address, amount, confirmations):
-        #QObject.__init__(self)
+        # QObject.__init__(self)
         self.hash = txhash
 
         self.timestamp = timestamp
@@ -173,4 +173,4 @@ class TransactionHist(object):
                             .strftime('%c'), 'utf-8')
         self.address = address
         self.amount = amount
-        self.confirmations = confirmations  
+        self.confirmations = confirmations

@@ -143,9 +143,9 @@ class Settings(QObject):
     on_storePassKey = Signal()
     on_passKey = Signal()
     on_useDoubleEncryption = Signal()
-    on_numberOfLaunch = Signal ()
+    on_numberOfLaunch = Signal()
     numberOfLaunch = Property(int, _get_numberOfLaunch, _set_numberOfLaunch,
-                              notify = on_numberOfLaunch)
+                              notify=on_numberOfLaunch)
     storePassKey = Property(bool, _get_storePassKey, _set_storePassKey,
                             notify=on_storePassKey)
     passKey = Property(unicode, _get_passKey,
@@ -153,4 +153,4 @@ class Settings(QObject):
     useDoubleEncryption = Property(bool,
                                    _get_useDoubleEncryption,
                                    _set_useDoubleEncryption,
-                                   notify=on_useDoubleEncryption)    
+                                   notify=on_useDoubleEncryption)

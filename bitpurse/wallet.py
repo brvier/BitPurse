@@ -52,7 +52,7 @@ class Wallet(object):
     def createAddr(self, doubleKey):
         if doubleKey:
             self.testDoublePK(doubleKey)
-            
+
         # eckey = EC_KEY(int(os.urandom(32).encode('hex'), 16))
         pk = EC_KEY(int(os.urandom(32).encode('hex'), 16))
         addr = Address()
@@ -175,7 +175,7 @@ class Wallet(object):
 
     def doubleDecryptPrivKeys(self, secondPass):
         if any([addr.doubleEncrypted is False for addr in self.addresses
-                if not addr.watchOnly ]):
+                if not addr.watchOnly]):
             raise DataError('Some keys are not double encrypted')
 
         self.testDoublePK(secondPass)
@@ -195,7 +195,6 @@ class Wallet(object):
         # TODO
         pass
 
-
     def exportDecryptedAsText(self, secondPass):
         if secondPass:
             self.testDoublePK(secondPass)
@@ -213,11 +212,11 @@ class Wallet(object):
             if not addr.watchOnly:
                 txt += 'Private Key: %s\n\n' % pk
             else:
-                txt+= 'Watch only\n\n'
+                txt += 'Watch only\n\n'
 
         return txt
-        
-    def importWatchOnly(self, passKey, address, label ='Undefined'):
+
+    def importWatchOnly(self, passKey, address, label='Undefined'):
         addr = Address()
         addr.addr = address
         addr.sharedKey = 'BitPurse'
@@ -510,11 +509,11 @@ class WalletController(QObject):
         except (WrongPassword, DataError), err:
             self.onError.emit(unicode(err))
 
-    @Slot(unicode, result = unicode)
+    @Slot(unicode, result=unicode)
     def exportDecryptedAsText(self, doubleKey):
         try:
             return self._wallet.exportDecryptedAsText(doubleKey)
-            
+
         except (WrongPassword, DataError), err:
             self.onError.emit(unicode(err))
             return ''
@@ -587,22 +586,23 @@ class WalletController(QObject):
     def exportWithShareUI(self):
         import dbus
         import urllib
-	import shutil
-	shutil.copyfile(os.path.join(os.path.expanduser('~'),
+        import shutil
+        shutil.copyfile(os.path.join(os.path.expanduser('~'),
                         '.bitpurse.wallet'),
-			os.path.join(os.path.expanduser('~'),
-			'MyDocs',                        
-			'bitpurse.wallet'))
-        bus = dbus.SessionBus()        
-        shareService = bus.get_object('com.nokia.ShareUi', '/')        
-        share = shareService.get_dbus_method('share', 'com.nokia.maemo.meegotouch.ShareUiInterface')
+                        os.path.join(os.path.expanduser('~'),
+                        'MyDocs',
+                        'bitpurse.wallet'))
+        bus = dbus.SessionBus()
+        shareService = bus.get_object('com.nokia.ShareUi', '/')
+        share = shareService.get_dbus_method(
+            'share', 'com.nokia.maemo.meegotouch.ShareUiInterface')
         description = urllib.quote('BitPurse Wallet')
         title = urllib.quote('BitPurse Wallet')
         link = os.path.join(os.path.expanduser('~'),
-	       'MyDocs',                        
-	       'bitpurse.wallet')
-        item = '%s'%link
-        share([item,])
+                            'MyDocs',
+                            'bitpurse.wallet')
+        item = '%s' % link
+        share([item, ])
 
     @Slot(unicode, unicode, unicode, unicode)
     def importFromBlockchainInfoWallet(self, guid, key, skey, dkey):
@@ -652,7 +652,7 @@ class WalletController(QObject):
 
     @Slot(unicode, unicode)
     def importWatchOnly(self, addr,
-                             label='Undefined'):
+                        label='Undefined'):
         try:
             self._wallet.importWatchOnly(self._currentPassKey,
                                          addr,
@@ -827,17 +827,17 @@ class WalletController(QObject):
 
     @Slot(unicode)
     def setCurrentAddress(self, addr):
-            self._currentAddressIndex = self._wallet.getIndex(addr)
-            self.onCurrentBalance.emit()
-            self.onCurrentLabel.emit()
-            self.onCurrentAddress.emit()
-            self.onCurrentWatchOnly.emit()
-            try:
-                self.transactionsModel.setData(
-                    self._wallet.addresses[self._currentAddressIndex]
-                    .transactions)
-            except IndexError:
-                print 'index error loading transactions model'
+        self._currentAddressIndex = self._wallet.getIndex(addr)
+        self.onCurrentBalance.emit()
+        self.onCurrentLabel.emit()
+        self.onCurrentAddress.emit()
+        self.onCurrentWatchOnly.emit()
+        try:
+            self.transactionsModel.setData(
+                self._wallet.addresses[self._currentAddressIndex]
+                .transactions)
+        except IndexError:
+            print 'index error loading transactions model'
 
     def isBusy(self, ):
         if not self.thread:
@@ -857,7 +857,7 @@ class WalletController(QObject):
         QApplication.clipboard().setText(addr, QClipboard.Clipboard)
 
     currentWatchOnly = Property(bool, getCurrentWatchOnly,
-                                      notify=onCurrentWatchOnly)
+                                notify=onCurrentWatchOnly)
     currentDoubleEncrypted = Property(bool, getCurrentDoubleEncrypted,
                                       notify=onCurrentDoubleEncrypted)
     busy = Property(bool, isBusy,
@@ -877,4 +877,4 @@ class WalletController(QObject):
     currentPassKey = Property(unicode,
                               getCurrentPassKey,
                               setCurrentPassKey,
-                              notify=onCurrentPassKey)                 
+                              notify=onCurrentPassKey)

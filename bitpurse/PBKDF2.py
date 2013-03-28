@@ -264,7 +264,8 @@ def crypt(word, salt=None, iterations=None):
     else:
         raise TypeError("salt must be a string")
 
-    # word must be a string or unicode (in the latter case, we convert to UTF-8)
+    # word must be a string or unicode (in the latter case, we convert to
+    # UTF-8)
     if isunicode(word):
         word = word.encode("UTF-8")
     elif not isbytes(word):

@@ -26,7 +26,7 @@ for root, dirs, filenames in os.walk(os.path.join(os.path.dirname(__file__),
 print files
 
 setup(name='bitpurse',
-      version='1.8.0',
+      version='1.9.0',
       license='GNU GPLv3',
       description='A nice looking Blockchain.info Bitcoin Wallet Client',
       long_description=("A nice looking Bitcoin Wallet client"

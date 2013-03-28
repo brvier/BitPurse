@@ -22,7 +22,7 @@ Page {
 
             Image {
                 anchors.horizontalCenter: parent.horizontalCenter
-                source: Qt.resolvedUrl('bitcoin.svg')
+                source: Qt.resolvedUrl('bitpurse.svg')
             }
 
             Label {

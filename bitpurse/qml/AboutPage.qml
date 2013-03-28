@@ -11,7 +11,7 @@ Page {
     
     Header{
         id:header
-        source: Qt.resolvedUrl('bitcoin.svg')
+        source: Qt.resolvedUrl('bitpurse.svg')
         title: qsTr('About BitPurse')
         color: '#666666'
     }
@@ -40,7 +40,7 @@ Page {
 
             Image {
                 anchors.horizontalCenter: parent.horizontalCenter
-                source: Qt.resolvedUrl('bitcoin.svg')
+                source: Qt.resolvedUrl('bitpurse.svg')
             }
 
             Label {
@@ -162,7 +162,7 @@ Page {
             }
             
             Label {
-                text: qsTr('<b>Thanks to</b><br>M4rtinK on #NemoMobile on freenode for the name suggestion')
+                text: qsTr('<b>Thanks to</b><br>M4rtinK on #NemoMobile on freenode for the name suggestion<br>Andrew Zhilin @andrewzhilin')
                 anchors {right: parent.right; left: parent.left}
                 wrapMode: Text.WordWrap
             }

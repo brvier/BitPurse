@@ -16,7 +16,7 @@ Page {
 
     Header{
         id:header
-        source: Qt.resolvedUrl('bitcoin.svg')
+        source: Qt.resolvedUrl('bitpurse.svg')
         title: qsTr('Send Bitcoins')
         color: '#666666'
     }

@@ -143,7 +143,7 @@ class Transaction(object):
         out = out.replace('\n', '')
         return out
 
-    #def get_private_key(self, key):
+    # def get_private_key(self, key):
     #    """  Privatekey(type,n) = Master_private_key + H(n|S|type)  """
     #    return b58decode(key)
 

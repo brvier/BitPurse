@@ -157,7 +157,7 @@ Page {
         property string addr
 
         id: deleteQueryDialog
-        icon: Qt.resolvedUrl('bitcoin.svg')
+        icon: Qt.resolvedUrl('bitpurse.svg')
         titleText: "Delete"
         message: "Are you sure you want to delete this address and his private key ?"
         acceptButtonText: qsTr("Delete")
@@ -208,4 +208,4 @@ Page {
             onClicked: (mainMenu.status === DialogStatus.Closed) ? mainMenu.open() : mainMenu.close()
         }
     }
-}        
+}         

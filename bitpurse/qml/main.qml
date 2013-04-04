@@ -52,10 +52,10 @@ PageStackWindow {
     }
 
 
-    /*RequestPage {
+    RequestPage {
         id: requestPage
         objectName: 'requestPage'
-    }*/
+    }
 
     ToolBarLayout {
         id: mainTools
@@ -74,10 +74,10 @@ PageStackWindow {
             onClicked: {changePage(sendPage);}
         }
 
-        /*ToolIcon {
+        ToolIcon {
             platformIconId: "toolbar-down"
             onClicked: {changePage(requestPage);}
-        }*/
+        }
 
         ToolIcon {
             platformIconId: "toolbar-view-menu"
@@ -192,4 +192,4 @@ PageStackWindow {
             }
         }
     ]
-}                
+}                 

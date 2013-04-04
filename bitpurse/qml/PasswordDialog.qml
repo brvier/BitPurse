@@ -13,6 +13,7 @@ Dialog {
     
  
     function launch() {
+        hideHint()
         open()
     }
  
@@ -39,9 +40,12 @@ Dialog {
                 onClicked: {
  
                     // check  password and confirmation
-                    hintArea.state = "Hide"
+                    hideHint();
                     //addrLabel = addrLabelField.text
-                    accept();
+                    if (passwd != '')
+                      accept();
+                    else
+                      showHint("Double password can't be empty");
                 }
             }
         }
@@ -111,8 +115,9 @@ Dialog {
                    anchors.margins: 1
  
                    horizontalAlignment: Text.AlignHCenter
-                   color: 'white'
+                   color: 'red'
                    wrapMode: Text.WordWrap
+                   font.pixelSize: 16          
                    text: ""
                    
                 }
@@ -120,9 +125,14 @@ Dialog {
         }
     }
  
+    function hideHint() {
+        hintArea.text  = ''
+        hintArea.state = "Hide"
+    }
+
     function showHint( msg )
     {
         hintArea.text  = msg
         hintArea.state = "Show"
     }
-}      
+}        

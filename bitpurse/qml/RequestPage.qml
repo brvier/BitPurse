@@ -3,11 +3,11 @@ import com.nokia.meego 1.0
 
 Page {
 
-    tools: mainTools
+    tools: simpleBackTools
 
     Header{
         id:header
-        source: Qt.resolvedUrl('bitcoin.svg')
+        source: Qt.resolvedUrl('bitpurse.svg')
         title: qsTr('Request Bitcoins')
         color: '#666666'
     }
@@ -39,17 +39,22 @@ Page {
 
             Label {
                 id : label
-                text : 'Label\nNEEDTOBEFILLEDNEEDTOBEFILLED1234567890'
+                text : '<b>' + WalletController.currentLabel + '</b><br>' + WalletController.currentAddress
                 wrapMode: Text.WrapAnywhere
                 anchors.left: parent.left
                 anchors.right: parent.right
 
             }
 
-            BitCoinLabel {
-                id: summary
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: '<b>0.00</b>000000'
+            Image {
+                id: qrCode
+                source: WalletController.currentAddress ?
+                            Qt.resolvedUrl('https://blockchain.info/qr?data='
+                                           + WalletController.currentAddress
+                                           + '&size=512') : undefined
+                anchors.right: parent.right
+                anchors.left: parent.left
+               // anchors.verticalCenter: parent.verticalCenter
             }
 
             Label {
@@ -63,16 +68,6 @@ Page {
                 text: '0.00'
             }
 
-            Label {
-                text: qsTr('<b>Address request to</b>')
-            }
-
-            TextField {
-                id:addressField
-                placeholderText: qsTr('Type BitCoin address')
-                anchors.right: parent.right
-                anchors.left: parent.left
-            }
 
             /*        Label {
             text: qsTr('Label')
@@ -90,21 +85,10 @@ Page {
                 id: requestButton
                 width: 350; height: 50
                 text: qsTr("Request")
-                onClicked: { busyindicatorRequest.running = true; }
+                onClicked: { WalletController.requestFromCurrent( amountField.text ); }
                 anchors.right: parent.right
                 anchors.left: parent.left
-                visible: busyindicatorRequest.running ? false : true;
-                opacity: busyindicatorRequest.running ? 0.0 : 1.0;
-            }
-
-            BusyIndicator {
-                id: busyindicatorRequest
-                platformStyle: BusyIndicatorStyle { size: "large"; spinnerFrames: "image://theme/spinner"}
-                running: false;
-                opacity: running ? 1.0 : 0.0;
-                visible: running ? true : false;
-                anchors.horizontalCenter: parent.horizontalCenter
             }
         }
     }
-}
+}   

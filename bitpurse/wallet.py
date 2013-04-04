@@ -158,16 +158,17 @@ class Wallet(object):
 
     def testDoublePK(self, secondPass):
         # Test if password match at least for the first key
-        if len(self.addresses) < 1:
+        addresses = [address for address in self.addresses if not address.watchOnly]      
+        if len(addresses) < 1:
             return
-
+       
         try:
-            if (getAddrFromPrivateKey(self.decryptPK(self.addresses[0]
+            if (getAddrFromPrivateKey(self.decryptPK(addresses[0]
                                                      .priv,
                                                      secondPass,
-                                                     self.addresses[0]
+                                                     addresses[0]
                                                      .sharedKey))
-                    != self.addresses[0].addr):
+                    != addresses[0].addr):
                 raise DataError('Double Password didn\'t match '
                                 'with other keys')
         except:
@@ -582,6 +583,28 @@ class WalletController(QObject):
         except IndexError:
             return False
 
+    @Slot(unicode)
+    def requestFromCurrent(self, amount):
+        import dbus
+        import urllib
+
+        bus = dbus.SessionBus()
+        shareService = bus.get_object('com.nokia.ShareUi', '/')
+        share = shareService.get_dbus_method(
+            'share', 'com.nokia.maemo.meegotouch.ShareUiInterface')
+        description = urllib.quote('Request %s BTC' % amount)
+        title = urllib.quote('Request %s BTC' % amount)
+        if amount:
+            link = urllib.quote('bitcoin:%s?amount=%d' 
+                            % (self.getCurrentAddress(), 
+                            int(decimal.Decimal(amount) * 100000000)))
+        else:
+            link = urllib.quote('bitcoin:%s' 
+                            % (self.getCurrentAddress()))
+                       
+        item = 'data:text/x-url;description=%s;title=%s,%s' % (description, title, link)
+        share([item, ]) 
+
     @Slot()
     def exportWithShareUI(self):
         import dbus
@@ -597,7 +620,7 @@ class WalletController(QObject):
         share = shareService.get_dbus_method(
             'share', 'com.nokia.maemo.meegotouch.ShareUiInterface')
         description = urllib.quote('BitPurse Wallet')
-        title = urllib.quote('BitPurse Wallet')
+        #title = urllib.quote('BitPurse Wallet')
         link = os.path.join(os.path.expanduser('~'),
                             'MyDocs',
                             'bitpurse.wallet')
@@ -631,20 +654,6 @@ class WalletController(QObject):
             import traceback
             traceback.print_exc()
             self.onError.emit(unicode(err))
-
-    def _importFromBlockchainInfoWallet(self, guid, key, skey, doubleKey):
-        self.onBusy.emit()
-        try:
-            self._wallet.importFromBlockchainInfoWallet(self._currentPassKey,
-                                                        guid, key, skey, doubleKey)
-            self.storeWallet()
-            self._update()
-        except Exception, err:
-            print err
-            import traceback
-            traceback.print_exc()
-            self.onError.emit(unicode(err))
-        self.onBusy.emit()
 
     @Slot(unicode, result=bool)
     def doubleEncrypt(self, doubleKey):
@@ -877,4 +886,4 @@ class WalletController(QObject):
     currentPassKey = Property(unicode,
                               getCurrentPassKey,
                               setCurrentPassKey,
-                              notify=onCurrentPassKey)
+                              notify=onCurrentPassKey)     

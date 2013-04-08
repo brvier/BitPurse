@@ -49,6 +49,8 @@ class Settings(QObject):
             self._write_default()
         elif 'storepasskey' not in self.config.options('Security'):
             self._write_default()
+        elif 'fiatcurrency' not in self.config.options('General'):
+            self.config.set('General','fiatCurrency', 'EUR')
 
     def _write_default(self):
         ''' Write the default config'''

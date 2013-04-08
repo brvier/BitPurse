@@ -175,7 +175,7 @@ Page {
             }
             
             Label {
-                text: qsTr('<b>Thanks to</b><br>M4rtinK on #NemoMobile on freenode for the name suggestion<br>Andrew Zhilin @andrewzhilin')
+                text: qsTr('<b>Thanks to</b><br>M4rtinK on #NemoMobile on freenode for the name suggestion<br>Andrew Zhilin @andrewzhilin for icon and splash screen<br>Timur Kristóf for some qml components from irc-chatter')
                 anchors {right: parent.right; left: parent.left}
                 wrapMode: Text.WordWrap
             }

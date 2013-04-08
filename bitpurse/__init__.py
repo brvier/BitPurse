@@ -46,7 +46,8 @@ __upgrade__ = '''0.9.0: First beta release
 1.8.0: Add watch only address (addr without priv key)
 1.9.0: Better splash screen and icon
 2.0.0: Improve password dialog
-       Add request btc feature'''
+       Add request btc feature
+       Add fiat convertion'''
 
 
 class BitPurse(QApplication):
@@ -119,4 +120,4 @@ class BitPurse(QApplication):
         self.walletController.settings.numberOfLaunch += 1
 
 if __name__ == '__main__':
-    sys.exit(BitPurse().exec_()) 
+    sys.exit(BitPurse().exec_())

@@ -140,16 +140,27 @@ class Settings(QObject):
         self._set('useDoubleEncryption', 'true' if b else 'false')
         self.on_useDoubleEncryption.emit()
 
+    def _set_fiatCurrency(self, value):
+        self._set('fiatCurrency', value)
+        self.on_fiatCurrency.emit()
+
+    def _get_fiatCurrency(self):
+        return self.get('fiatCurrency')
+
     on_storePassKey = Signal()
     on_passKey = Signal()
     on_useDoubleEncryption = Signal()
     on_numberOfLaunch = Signal()
+    on_fiatCurrency = Signal()
+
     numberOfLaunch = Property(int, _get_numberOfLaunch, _set_numberOfLaunch,
                               notify=on_numberOfLaunch)
     storePassKey = Property(bool, _get_storePassKey, _set_storePassKey,
                             notify=on_storePassKey)
     passKey = Property(unicode, _get_passKey,
                        _set_passKey, notify=on_passKey)
+    fiatCurrency = Property(unicode, _get_fiatCurrency,
+                            _set_fiatCurrency, notify=on_fiatCurrency)
     useDoubleEncryption = Property(bool,
                                    _get_useDoubleEncryption,
                                    _set_useDoubleEncryption,

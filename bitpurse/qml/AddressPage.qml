@@ -56,6 +56,7 @@ Page {
                 horizontalCenter: parent.horizontalCenter
             }
             text: WalletController.currentBalance
+            subtext: WalletController.currentFiatBalance
         }
     }
 

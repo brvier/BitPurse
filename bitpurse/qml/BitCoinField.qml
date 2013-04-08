@@ -10,6 +10,7 @@ TextField {
         sourceSize.width: 24
         sourceSize.height: 24
         anchors.rightMargin: 10
+        anchors.leftMargin: 10
         anchors.right: parent.right
         source: Qt.resolvedUrl('bitcoin.svg')
     }

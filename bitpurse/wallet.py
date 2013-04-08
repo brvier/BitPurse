@@ -29,7 +29,7 @@ from settings import Settings
 import decimal
 
 from utils import prettyPBitcoin, unpadding, \
-    getDataFromChainblock, b58decode, \
+    getDataFromChainblock, \
     padding, getAddrFromPrivateKey, \
     EC_KEY, getSecret, \
     SecretToASecret
@@ -144,7 +144,8 @@ class Wallet(object):
         if any([addr.doubleEncrypted is True for addr in self.addresses
                 if not addr.watchOnly]):
             raise DataError('Some keys are already double encrypted')
-        for addr in [address for address in self.addresses if not address.watchOnly]:
+        for addr in [address for address in self.addresses
+                     if not address.watchOnly]:
             oldpk = addr.priv
             if addr.sharedKey is None:
                 addr.sharedKey = 'BitPurse'
@@ -158,10 +159,11 @@ class Wallet(object):
 
     def testDoublePK(self, secondPass):
         # Test if password match at least for the first key
-        addresses = [address for address in self.addresses if not address.watchOnly]      
+        addresses = [address for address in self.addresses
+                     if not address.watchOnly]
         if len(addresses) < 1:
             return
-       
+
         try:
             if (getAddrFromPrivateKey(self.decryptPK(addresses[0]
                                                      .priv,
@@ -181,7 +183,8 @@ class Wallet(object):
 
         self.testDoublePK(secondPass)
 
-        for addr in [address for address in self.addresses if not address.watchOnly]:
+        for addr in [address for address in self.addresses
+                     if not address.watchOnly]:
             if addr.sharedKey is None:
                 addr.sharedKey = 'BitPurse'
             addr.priv = self.decryptPK(addr.priv, secondPass,
@@ -338,7 +341,8 @@ class Wallet(object):
                             secondPassword,
                             address.sharedKey)
                         try:
-                            if getAddrFromPrivateKey(uncryptedKey) != address.addr:
+                            if getAddrFromPrivateKey(uncryptedKey) \
+                                    != address.addr:
                                 raise WrongPassword('Wrong second password')
                         except:
                             raise WrongPassword('Wrong second password')
@@ -381,7 +385,6 @@ class Wallet(object):
                '|'.join(self.getArchivedAddrAddresses())))
 
         data = getDataFromChainblock(req)
-        print data
         try:
             self.balance = data['wallet']['final_balance']
         except KeyError:
@@ -469,8 +472,10 @@ class WalletController(QObject):
     onBusy = Signal()
     onDoubleEncrypted = Signal()
     onBalance = Signal()
+    onFiatBalance = Signal()
     onWalletUnlocked = Signal()
     onCurrentBalance = Signal()
+    onCurrentFiatBalance = Signal()
     onCurrentLabel = Signal()
     onCurrentAddress = Signal()
     onCurrentDoubleEncrypted = Signal()
@@ -481,6 +486,9 @@ class WalletController(QObject):
         QObject.__init__(self,)
         self.thread = None
         self._balance = '<b>0.00</b>000000'
+        self._fiatSymbol = u'€'
+        self._fiatRate = 0
+        self._fiatBalance = u'0 €'
         self._wallet = Wallet()
         self._walletUnlocked = False
         self.settings = Settings()
@@ -555,6 +563,15 @@ class WalletController(QObject):
         except IndexError:
             return prettyPBitcoin(0)
 
+    def getCurrentFiatBalance(self):
+        try:
+            return '%f %s (%f)' \
+                % (self._wallet.addresses[self._currentAddressIndex].balance
+                   * self._fiatRate / 100000000, self._fiatSymbol,
+                   self._fiatRate)
+        except IndexError:
+            return ''
+
     def getCurrentLabel(self):
         try:
             return self._wallet.addresses[
@@ -595,20 +612,21 @@ class WalletController(QObject):
         description = urllib.quote('Request %s BTC' % amount)
         title = urllib.quote('Request %s BTC' % amount)
         if amount:
-            link = urllib.quote('bitcoin:%s?amount=%d' 
-                            % (self.getCurrentAddress(), 
-                            int(decimal.Decimal(amount) * 100000000)))
+            link = urllib.quote('bitcoin:%s?amount=%d'
+                                % (self.getCurrentAddress(),
+                                   int(decimal.Decimal(amount) * 100000000)))
         else:
-            link = urllib.quote('bitcoin:%s' 
-                            % (self.getCurrentAddress()))
-                       
-        item = 'data:text/x-url;description=%s;title=%s,%s' % (description, title, link)
-        share([item, ]) 
+            link = urllib.quote('bitcoin:%s'
+                                % (self.getCurrentAddress()))
+
+        item = 'data:text/x-url;description=%s;title=%s,%s' \
+            % (description, title, link)
+        share([item, ])
 
     @Slot()
     def exportWithShareUI(self):
         import dbus
-        import urllib
+        # import urllib
         import shutil
         shutil.copyfile(os.path.join(os.path.expanduser('~'),
                         '.bitpurse.wallet'),
@@ -619,8 +637,8 @@ class WalletController(QObject):
         shareService = bus.get_object('com.nokia.ShareUi', '/')
         share = shareService.get_dbus_method(
             'share', 'com.nokia.maemo.meegotouch.ShareUiInterface')
-        description = urllib.quote('BitPurse Wallet')
-        #title = urllib.quote('BitPurse Wallet')
+        # description = urllib.quote('BitPurse Wallet')
+        # title = urllib.quote('BitPurse Wallet')
         link = os.path.join(os.path.expanduser('~'),
                             'MyDocs',
                             'bitpurse.wallet')
@@ -678,8 +696,9 @@ class WalletController(QObject):
     def _importFromBlockchainInfoWallet(self, guid, key, skey, doubleKey):
         self.onBusy.emit()
         try:
-            self._wallet.importFromBlockchainInfoWallet(self._currentPassKey,
-                                                        guid, key, skey, doubleKey)
+            self._wallet.importFromBlockchainInfoWallet(
+                self._currentPassKey,
+                guid, key, skey, doubleKey)
             self.storeWallet()
             self._update()
         except Exception, err:
@@ -765,8 +784,15 @@ class WalletController(QObject):
                 self._wallet.load_addresses(self._currentPassKey)
             except ValueError:
                 raise WrongPassword('Wrong passphrase')
+            self._updateFiat()
             self._balance = prettyPBitcoin(self._wallet.balance)
+            self._fiatBalance = u'%f %s (%f)' % ((self._wallet.balance
+                                                  * self._fiatRate
+                                                  / 100000000),
+                                                 self._fiatSymbol,
+                                                 self._fiatRate)
             self.onBalance.emit()
+            self.onFiatBalance.emit()
             self._walletUnlocked = True
             self.addressesModel.setData(self._wallet.getActiveAddresses())
 
@@ -792,12 +818,26 @@ class WalletController(QObject):
             self.thread = threading.Thread(None, self._update, None, ())
             self.thread.start()
 
+    def _updateFiat(self,):
+        req = 'https://blockchain.info/ticker'
+        data = getDataFromChainblock(req)
+        self._fiatRate = data[self.settings.fiatCurrency]['15m']
+        self._fiatSymbol = data[self.settings.fiatCurrency]['symbol']
+        print self._fiatRate, self._fiatSymbol
+
     def _update(self,):
         self.onBusy.emit()
         try:
             self._wallet.update(self._currentPassKey)
+            self._updateFiat()
             self._balance = prettyPBitcoin(self._wallet.balance)
+            self._fiatBalance = u'%f %s (%f)' % ((self._wallet.balance
+                                                  * self._fiatRate
+                                                  / 100000000),
+                                                 self._fiatSymbol,
+                                                 self._fiatRate)
             self.onBalance.emit()
+            self.onFiatBalance.emit()
             # print self._wallet.getActiveAddresses()
             self.addressesModel.setData(self._wallet.getActiveAddresses())
             try:
@@ -841,6 +881,7 @@ class WalletController(QObject):
         self.onCurrentLabel.emit()
         self.onCurrentAddress.emit()
         self.onCurrentWatchOnly.emit()
+        self.onCurrentFiatBalance.emit()
         try:
             self.transactionsModel.setData(
                 self._wallet.addresses[self._currentAddressIndex]
@@ -858,6 +899,9 @@ class WalletController(QObject):
     def getBalance(self):
         return self._balance
 
+    def getFiatBalance(self):
+        return self._fiatBalance
+
     def getWalletUnlocked(self):
         return self._walletUnlocked
 
@@ -874,9 +918,13 @@ class WalletController(QObject):
     walletUnlocked = Property(bool, getWalletUnlocked,
                               notify=onWalletUnlocked)
     balance = Property(unicode, getBalance, notify=onBalance)
+    fiatBalance = Property(unicode, getFiatBalance, notify=onFiatBalance)
     currentBalance = Property(unicode,
                               getCurrentBalance,
                               notify=onCurrentBalance)
+    currentFiatBalance = Property(unicode,
+                                  getCurrentFiatBalance,
+                                  notify=onCurrentFiatBalance)
     currentLabel = Property(unicode,
                             getCurrentLabel,
                             notify=onCurrentLabel)
@@ -886,4 +934,4 @@ class WalletController(QObject):
     currentPassKey = Property(unicode,
                               getCurrentPassKey,
                               setCurrentPassKey,
-                              notify=onCurrentPassKey)      
+                              notify=onCurrentPassKey)

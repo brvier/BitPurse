@@ -1,9 +1,12 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
+import com.nokia.extras 1.0
 
 Page {
     tools: backTools
     id: settingsPage
+
+    property string fiatCurrency : Settings.fiatCurrency
 
     Header{
         id:header
@@ -79,7 +82,26 @@ Page {
                     }
                 }
             }
+
+            TitleLabel {
+                text: qsTr("Fiat Currency")
+            }
+
+            Label {
+                text: "Currency"
+                width: parent.width 
+                height: fiatButton.height
+                verticalAlignment: Text.AlignVCenter
+
+                TumblerButton {
+                    id: fiatButton
+                    text: "EUR"
+                    anchors.right: parent.right
+                    onClicked: fiatSelectionDialog.open()
+                }
+            }
             
+
             TitleLabel {
                 text: qsTr("Import Blockchain.info MyWallet")
             }
@@ -261,6 +283,114 @@ Page {
     ScrollDecorator {
         flickableItem: flick
         platformStyle: ScrollDecoratorStyle {
-        }}
+        }
+    }
 
+    WorkingSelectionDialog {
+        id: fiatSelectionDialog
+        titleText: "Fiat Currency"
+        searchFieldVisible: false
+
+        model: ListModel {
+
+            // This function is what interprets the selection when the user selects a color
+            function interpretValue() {
+                var item = fiatListModel.get(fiatSelectionDialog.selectedIndex);
+                fiatCurrency = item.value
+                fiatButton.text = item.name
+            }
+
+            id: fiatListModel
+            ListElement {
+                name: "EUR (Default)"
+                value: "EUR"
+            }
+            ListElement {
+                name: "USD"
+                value: "USD"
+            }
+            ListElement {
+                name: "CNY"
+                value: "CNY"
+            }
+             ListElement {
+                name: "JPY"
+                value: "JPY"
+            }
+            ListElement {
+                name: "SGD"
+                value: "SGD"
+            }
+            ListElement {
+                name: "HKD"
+                value: "HKD"
+            }
+            ListElement {
+                name: "CAD"
+                value: "CAD"
+            }
+            ListElement {
+                name: "AUD"
+                value: "AUD"
+            }
+            ListElement {
+                name: "NZD"
+                value: "NZD"
+            }
+            ListElement {
+                name: "GBP"
+                value: "GBP"
+            }
+            ListElement {
+                name: "DKK"
+                value: "DKK"
+            }
+            ListElement {
+                name: "SEK"
+                value: "SEK"
+            }
+            ListElement {
+                name: "BRL"
+                value: "BRL"
+            }
+             ListElement {
+                name: "CHF"
+                value: "CHF"
+            }
+             ListElement {
+                name: "RUB"
+                value: "RUB"
+            }
+             ListElement {
+                name: "SLL"
+                value: "SLL"
+            }
+             ListElement {
+                name: "PLN"
+                value: "PLN"
+            }
+             ListElement {
+                name: "THB"
+                value: "THB"
+            }
+                      
+        }
+        onAccepted: fiatListModel.interpretValue()
+    }
+    // This event handler will set the dialog and the tumbler button to the name of the selected color
+    Component.onCompleted: {
+        for (var i = 0; i < fiatListModel.count; i++) {
+            var item = fiatListModel.get(i)
+            if (item.value === Settings.fiatCurrency) {
+                fiatSelectionDialog.selectedIndex = i
+                fiatListModel.interpretValue();
+                break;
+            }
+        }
+    }
+    Binding {
+        target: Settings
+        property: "fiatCurrency"
+        value: fiatCurrency
+    }
 }                   

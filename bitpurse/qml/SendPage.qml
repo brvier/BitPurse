@@ -59,6 +59,7 @@ Page {
                 id: summary
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: WalletController.currentBalance
+                subtext: WalletController.currentFiatBalance
             }
 
             Label {

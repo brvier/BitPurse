@@ -21,7 +21,8 @@ Page {
             top: header.bottom
             horizontalCenter: parent.horizontalCenter
         }
-        text: WalletController.balance
+        text: WalletController.balance 
+        subtext: WalletController.fiatBalance
     }
 
     ListModel {

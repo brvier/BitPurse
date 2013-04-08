@@ -381,7 +381,7 @@ class Wallet(object):
                '|'.join(self.getArchivedAddrAddresses())))
 
         data = getDataFromChainblock(req)
-
+        print data
         try:
             self.balance = data['wallet']['final_balance']
         except KeyError:
@@ -886,4 +886,4 @@ class WalletController(QObject):
     currentPassKey = Property(unicode,
                               getCurrentPassKey,
                               setCurrentPassKey,
-                              notify=onCurrentPassKey)     
+                              notify=onCurrentPassKey)      

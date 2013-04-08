@@ -40,4 +40,4 @@ Row {
         font.bold: true
         font.pixelSize: 20
     }
-}
+}  

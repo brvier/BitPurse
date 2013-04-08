@@ -127,17 +127,17 @@ PageStackWindow {
         id: mainMenu
         visualParent: pageStack
         MenuLayout {
-            MenuItem { text: qsTr("About");
+            MenuItem { text: qsTr("About & Help");
                 onClicked: pageStack.push(
                                Qt.createComponent(
                                    Qt.resolvedUrl("AboutPage.qml")));
             }
             
-            MenuItem { text: qsTr("Help");
+            /*MenuItem { text: qsTr("Help");
                 onClicked: pageStack.push(
                                Qt.createComponent(
                                    Qt.resolvedUrl("HelpPage.qml")));
-            }
+            }*/
 
             
             MenuItem { text: qsTr("Settings");
@@ -152,11 +152,11 @@ PageStackWindow {
                     Qt.openUrlExternally('https://github.com/khertan/BitPurse/issues/new');
                 }
             }
-            MenuItem { text: qsTr('LogOut'); onClicked: {
+            /*MenuItem { text: qsTr('LogOut'); onClicked: {
                     WalletController.currentPassKey = '';
                     changePage(loginPage);
                 }
-            }
+            }*/
         }
     }
 
@@ -192,4 +192,4 @@ PageStackWindow {
             }
         }
     ]
-}                 
+}                  

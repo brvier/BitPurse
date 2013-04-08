@@ -100,6 +100,19 @@ Page {
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
 
+                Button {
+                    id: helpButton
+                    width: 350; height: 50
+                    text: qsTr("Help")
+                    onClicked: {
+                        pageStack.push(
+                               Qt.createComponent(
+                                   Qt.resolvedUrl("HelpPage.qml")));
+          
+                     }
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+ 
             /*BusyIndicator {
                 id: busyindicatorSending
                 platformStyle: BusyIndicatorStyle { size: "large"; spinnerFrames: "image://theme/spinner"}
@@ -168,4 +181,4 @@ Page {
             }
         }
     }
-}      
+}       

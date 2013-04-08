@@ -26,7 +26,7 @@ Page {
 
         Column {
             id: settingsColumn
-            spacing: 10
+            spacing: 15
             width: parent.width - 40
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
@@ -263,4 +263,4 @@ Page {
         platformStyle: ScrollDecoratorStyle {
         }}
 
-}                
+}                   

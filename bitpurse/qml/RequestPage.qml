@@ -51,10 +51,11 @@ Page {
                 source: WalletController.currentAddress ?
                             Qt.resolvedUrl('https://blockchain.info/qr?data='
                                            + WalletController.currentAddress
-                                           + '&size=512') : undefined
-                anchors.right: parent.right
-                anchors.left: parent.left
-               // anchors.verticalCenter: parent.verticalCenter
+                                           + '&size=384') : undefined
+                width: 384
+                height: 384
+
+                anchors.horizontalCenter: parent.horizontalCenter
             }
 
             Label {
@@ -91,4 +92,4 @@ Page {
             }
         }
     }
-}   
+}    

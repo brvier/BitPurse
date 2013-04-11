@@ -29,7 +29,7 @@ import os.path
 
 __author__ = 'Benoit HERVIER (Khertan)'
 __email__ = 'khertan@khertan.net'
-__version__ = '2.0.0'
+__version__ = '2.0.1'
 __build__ = '1'
 __upgrade__ = '''0.9.0: First beta release
 0.9.1: Second beta release, add missing python-crypto dependancy
@@ -47,7 +47,9 @@ __upgrade__ = '''0.9.0: First beta release
 1.9.0: Better splash screen and icon
 2.0.0: Improve password dialog
        Add request btc feature
-       Add fiat convertion'''
+       Add fiat convertion
+2.0.1: Fix a bug preventing openning wallet when there is no network
+       connection'''
 
 
 class BitPurse(QApplication):

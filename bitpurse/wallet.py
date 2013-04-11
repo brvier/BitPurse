@@ -784,7 +784,10 @@ class WalletController(QObject):
                 self._wallet.load_addresses(self._currentPassKey)
             except ValueError:
                 raise WrongPassword('Wrong passphrase')
-            self._updateFiat()
+            try:
+                self._updateFiat()
+            except (urllib2.URLError, urllib2.HTTPError):
+                pass
             self._balance = prettyPBitcoin(self._wallet.balance)
             self._fiatBalance = u'%f %s (%f)' % ((self._wallet.balance
                                                   * self._fiatRate

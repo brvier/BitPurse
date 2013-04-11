@@ -17,7 +17,7 @@ from PySide.QtGui import QApplication
 from PySide.QtCore import QUrl, QObject
 from PySide import QtDeclarative
 from PySide.QtOpenGL import QGLWidget, QGLFormat
-from wallet import WalletController
+from walletcontroller import WalletController
 import sys
 import os
 import os.path

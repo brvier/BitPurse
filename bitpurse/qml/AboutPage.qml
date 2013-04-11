@@ -56,8 +56,7 @@ Page {
             }
             Label {
                 text: qsTr('A nice looking Bitcoin Client for MeeGo.')
-                anchors {right: parent.right; left: parent.left}
-                wrapMode: Text.WordWrap
+                anchors.horizontalCenter: parent.horizontalCenter
             }
 
             Column {
@@ -126,6 +125,7 @@ Page {
                 text: qsTr('By Benoit HERVIER<br>Licenced under GPLv3.<br>http://khertan.net/BitPurse')
                 anchors {right: parent.right; left: parent.left}
                 wrapMode: Text.WordWrap
+                 
                 MouseArea {
                     anchors.fill: parent
                     onClicked:

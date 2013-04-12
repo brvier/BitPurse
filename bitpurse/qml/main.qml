@@ -57,6 +57,7 @@ PageStackWindow {
         objectName: 'requestPage'
     }
 
+
     ToolBarLayout {
         id: mainTools
         visible: false
@@ -133,11 +134,12 @@ PageStackWindow {
                                    Qt.resolvedUrl("AboutPage.qml")));
             }
             
-            /*MenuItem { text: qsTr("Help");
-                onClicked: pageStack.push(
-                               Qt.createComponent(
-                                   Qt.resolvedUrl("HelpPage.qml")));
-            }*/
+            MenuItem { text: qsTr("Copy address");
+                visible: pageStack.currentPage.objectName == 'addressPage'
+                onClicked: 
+                    WalletController.putAddrInClipboard(
+                        WalletController.currentAddress);
+            }
 
             
             MenuItem { text: qsTr("Settings");

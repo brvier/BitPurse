@@ -108,24 +108,24 @@ Page {
             
             TextField {
                 id: blockchainGuid
-                placeholderText: qsTr("GUID")
+                placeholderText: qsTr("MyWallet GUID")
                 width: parent.width
             }
             TextField {
                 id: blockchainKey
-                placeholderText: qsTr("Main Key")
+                placeholderText: qsTr("MyWallet Main Password")
                 echoMode: TextInput.Password
                 width: parent.width
             }
             TextField {
                 id: blockchainSecondKey
-                placeholderText: qsTr("Second Key")
+                placeholderText: qsTr("MyWallet Double Encryption Password")
                 echoMode: TextInput.Password
                 width: parent.width
             }
             TextField {
                 id: blockchainDoubleEncryption
-                placeholderText: qsTr("Double encryption password")
+                placeholderText: qsTr("BitPurse Double Encryption Password")
                 visible: Settings.useDoubleEncryption
                 opacity: visible ? 1.0 : 0.0
                 echoMode: TextInput.Password
@@ -174,7 +174,7 @@ Page {
 
             TextField {
                 id: keyDoubleEncryption
-                placeholderText: qsTr("Double encryption password")                
+                placeholderText: qsTr("BitPurse Double Encryption Password")                
                 echoMode: TextInput.Password
                 visible: Settings.useDoubleEncryption
                 opacity: visible ? 1.0 : 0.0
@@ -248,7 +248,7 @@ Page {
 
             TextField {
                 id: seeDoubleEncryption
-                placeholderText: qsTr("Double encryption password")                
+                placeholderText: qsTr("BitPurse Double Encryption Password")                
                 echoMode: TextInput.Password
                 visible: Settings.useDoubleEncryption
                 opacity: visible ? 1.0 : 0.0

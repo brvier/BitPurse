@@ -49,7 +49,9 @@ __upgrade__ = '''0.9.0: First beta release
        Add request btc feature
        Add fiat convertion
 2.0.1: Fix a bug preventing openning wallet when there is no network
-       connection'''
+       Improve placeholder name in settings
+       Improve edit label dialog
+       Improve double password dialog'''
 
 
 class BitPurse(QApplication):

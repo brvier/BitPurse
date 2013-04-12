@@ -51,7 +51,9 @@ __upgrade__ = '''0.9.0: First beta release
 2.0.1: Fix a bug preventing openning wallet when there is no network
        Improve placeholder name in settings
        Improve edit label dialog
-       Improve double password dialog'''
+       Improve double password dialog
+       Update wallet balance after sending a transaction
+       Remove transaction without confirmation older than 7 days'''
 
 
 class BitPurse(QApplication):

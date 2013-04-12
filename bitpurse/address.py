@@ -17,6 +17,7 @@ from PySide.QtCore import QAbstractListModel, QModelIndex
 from utils import prettyPBitcoin
 from uuid import uuid4
 from datetime import datetime
+import time
 
 
 class Address(object):
@@ -70,11 +71,16 @@ class Address(object):
 
         try:
             for tx in jsondict['txs']:
-                self.transactions.append(TransactionHist(tx['hash'],
-                                                         tx['timestamp'],
-                                                         tx['address'],
-                                                         tx['amount'],
-                                                         tx['confirmations']))
+                if (tx['timestamp']
+                    + (60 * 60 * 24 * 7)
+                    > time.time()) and (tx['confirmations'] >= 1):
+
+                    self.transactions.append(TransactionHist(
+                        tx['hash'],
+                        tx['timestamp'],
+                        tx['address'],
+                        tx['amount'],
+                        tx['confirmations']))
         except KeyError:
             pass
 

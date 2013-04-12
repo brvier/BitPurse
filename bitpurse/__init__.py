@@ -53,7 +53,8 @@ __upgrade__ = '''0.9.0: First beta release
        Improve edit label dialog
        Improve double password dialog
        Update wallet balance after sending a transaction
-       Remove transaction without confirmation older than 7 days'''
+       Remove transaction without confirmation older than 7 days
+       Add a copy address item menu in address page menu'''
 
 
 class BitPurse(QApplication):

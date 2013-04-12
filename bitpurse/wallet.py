@@ -13,22 +13,17 @@
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
 
-from PySide.QtCore import Slot, QObject, \
-    Signal, Property, QTimer
-from PySide.QtGui import QApplication, QClipboard
-import urllib2
+from PySide.QtCore import Slot
+from PySide.QtGui import QApplication
 import json
 from PBKDF2 import PBKDF2
 from Crypto.Cipher import AES
-import threading
 import os.path
 
-from address import AddressesModel, Address, TransactionHist, TransactionsModel
-from transaction import Transaction, TransactionSubmitted
+from address import Address, TransactionHist
 from settings import Settings
-import decimal
 
-from utils import prettyPBitcoin, unpadding, \
+from utils import unpadding, \
     getDataFromChainblock, \
     padding, getAddrFromPrivateKey, \
     EC_KEY, getSecret, \
@@ -463,4 +458,3 @@ class Wallet(object):
             import traceback
             traceback.print_exc()
             raise
-

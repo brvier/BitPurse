@@ -73,7 +73,7 @@ class Address(object):
             for tx in jsondict['txs']:
                 if (tx['timestamp']
                     + (60 * 60 * 24 * 7)
-                    > time.time()) and (tx['confirmations'] >= 1):
+                        > time.time()) and (tx['confirmations'] >= 1):
 
                     self.transactions.append(TransactionHist(
                         tx['hash'],

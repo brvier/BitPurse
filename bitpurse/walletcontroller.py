@@ -17,24 +17,19 @@ from PySide.QtCore import Slot, QObject, \
     Signal, Property, QTimer
 from PySide.QtGui import QApplication, QClipboard
 import urllib2
-import json
-from PBKDF2 import PBKDF2
-from Crypto.Cipher import AES
 import threading
 import os.path
 
-from address import AddressesModel, Address, TransactionHist, TransactionsModel
+from address import AddressesModel, TransactionsModel
 from transaction import Transaction, TransactionSubmitted
 from settings import Settings
 import decimal
 
-from utils import prettyPBitcoin, unpadding, \
-    getDataFromChainblock, \
-    padding, getAddrFromPrivateKey, \
-    EC_KEY, getSecret, \
-    SecretToASecret
+from utils import prettyPBitcoin, \
+    getDataFromChainblock
 
 from wallet import Wallet, DataError, WrongPassword
+
 
 class WalletController(QObject):
     onError = Signal(unicode)

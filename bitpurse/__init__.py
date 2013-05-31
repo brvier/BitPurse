@@ -29,7 +29,7 @@ import os.path
 
 __author__ = 'Benoit HERVIER (Khertan)'
 __email__ = 'khertan@khertan.net'
-__version__ = '2.0.1'
+__version__ = '2.0.2'
 __build__ = '1'
 __upgrade__ = '''0.9.0: First beta release
 0.9.1: Second beta release, add missing python-crypto dependancy
@@ -54,7 +54,8 @@ __upgrade__ = '''0.9.0: First beta release
        Improve double password dialog
        Update wallet balance after sending a transaction
        Remove transaction without confirmation older than 7 days
-       Add a copy address item menu in address page menu'''
+       Add a copy address item menu in address page menu
+2.0.2: Fix issue #4, avoid putting a change address with a null value'''
 
 
 class BitPurse(QApplication):

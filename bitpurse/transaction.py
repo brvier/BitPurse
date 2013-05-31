@@ -63,7 +63,8 @@ class Transaction(object):
                                    " a fee of 0.0005 is required for"
                                    " small transactions")
 
-        outputs.append((change_addr, change_amount))
+        if change_amount != 0:
+            outputs.append((change_addr, change_amount))
 
         self.tx = self.signed_tx(inputs, outputs, privKey)
 

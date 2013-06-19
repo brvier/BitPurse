@@ -15,7 +15,7 @@
 
 import os
 import sys
-
+import datetime
 import pypackager
 sys.path.append('bitpurse')
 
@@ -32,6 +32,8 @@ if __name__ == "__main__":
     p = pypackager.PyPackager("bitpurse")
     p.display_name = 'BitPurse'
     p.version = __version__
+    if 'git' in sys.argv:
+        p.version += '+%sgit' % datetime.datetime.now().strftime('%Y%m%d')
     p.buildversion = __build__
     p.summary = 'A nice looking Blockchain.info Bitcoin Wallet Client'
     p.description = ("A nice looking Blockchain.info Bitcoin Wallet Client "
@@ -89,8 +91,8 @@ exit 0'''
     p['/usr/share/icons/hicolor/128x128/apps'] = ['bitpurse_128.png', ]
     p['/usr/share/icons/hicolor/scalable/apps'] = ['bitpurse.svg', ]
     p['/usr/share/applications'] = ['bitpurse.desktop', ]
-    p['/usr/share/backup-framework/applications'] = ['bitpurse.conf',]
+    p['/usr/share/backup-framework/applications'] = ['bitpurse.conf', ]
     p["/opt"] = files
     p["/opt/bitpurse"] = ['splash.png', ]
 
-    print p.generate(('debian_source', 'rpm_source', 'debian_binary'))   
+    print p.generate(('debian_source', 'rpm_source', 'debian_binary'))

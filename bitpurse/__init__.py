@@ -55,7 +55,8 @@ __upgrade__ = '''0.9.0: First beta release
        Update wallet balance after sending a transaction
        Remove transaction without confirmation older than 7 days
        Add a copy address item menu in address page menu
-2.0.2: Workarround to try to fix tracker index for shareui'''
+2.0.2: Fix issue #4, avoid putting a change address with a null value
+2.0.3: Workarround to try to fix tracker index for shareui'''
 
 
 class BitPurse(QApplication):
@@ -128,4 +129,4 @@ class BitPurse(QApplication):
         self.walletController.settings.numberOfLaunch += 1
 
 if __name__ == '__main__':
-    sys.exit(BitPurse().exec_())
+    sys.exit(BitPurse().exec_()) 

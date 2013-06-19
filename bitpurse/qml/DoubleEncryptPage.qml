@@ -12,7 +12,7 @@ Page {
 
         ToolIcon {
             platformIconId: "toolbar-back"
-            onClicked: {pageStack.pop();Settings.useDoubleEncryption = false;}
+            onClicked: {Settings.useDoubleEncryption = false;pageStack.pop();}
         }
     }
 
@@ -102,4 +102,4 @@ Page {
         }
     }
 
-}
+} 

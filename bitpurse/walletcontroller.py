@@ -4,14 +4,14 @@
 # Copyright (c) 2012 Benoit HERVIER <khertan@khertan.net>
 # Licenced under GPLv3
 
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published
-## by the Free Software Foundation; version 3 only.
-##
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published
+# by the Free Software Foundation; version 3 only.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 
 from PySide.QtCore import Slot, QObject, \
     Signal, Property, QTimer
@@ -29,6 +29,8 @@ from utils import prettyPBitcoin, \
     getDataFromChainblock
 
 from wallet import Wallet, DataError, WrongPassword
+
+import time
 
 
 class WalletController(QObject):
@@ -208,6 +210,11 @@ class WalletController(QObject):
         link = os.path.join(os.path.expanduser('~'),
                             'MyDocs',
                             'bitpurse.wallet')
+
+        # Force tracker index sometime
+        os.system('/usr/bin/tracker-info "%s"' % link)
+        time.sleep(1)
+
         item = '%s' % link
         share([item, ])
 
@@ -282,6 +289,7 @@ class WalletController(QObject):
         try:
             self._wallet.doubleEncryptPrivKeys(doubleKey)
             self.settings.useDoubleEncryption = True
+            self.settings.on_useDoubleEncryption.emit()
             self.storeWallet()
             self._update()
         except Exception, err:
@@ -300,6 +308,7 @@ class WalletController(QObject):
         try:
             self._wallet.doubleDecryptPrivKeys(doubleKey)
             self.settings.useDoubleEncryption = False
+            self.settings.on_useDoubleEncryption.emit()
             self.storeWallet()
             self._update()
         except Exception, err:
@@ -508,4 +517,4 @@ class WalletController(QObject):
     currentPassKey = Property(unicode,
                               getCurrentPassKey,
                               setCurrentPassKey,
-                              notify=onCurrentPassKey)
+                              notify=onCurrentPassKey) 

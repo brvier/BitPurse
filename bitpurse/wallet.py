@@ -325,7 +325,7 @@ class Wallet(QObject):
                 address.transactions.append(transaction)
                 return
 
-    def getPrivKeyFor Address(self, addr, secondPassword=None):
+    def getPrivKeyForAddress(self, addr, secondPassword=None):
         '''Return private key for an address'''
         for address in self.addresses:
             if addr == address.addr:
@@ -458,4 +458,4 @@ class Wallet(QObject):
         except:
             import traceback
             traceback.print_exc()
-            raise 
+            raise  

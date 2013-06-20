@@ -13,7 +13,7 @@
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
 
-from PySide.QtCore import Slot
+from PySide.QtCore import Slot, Signal, QObject
 from PySide.QtGui import QApplication
 import json
 from PBKDF2 import PBKDF2
@@ -38,8 +38,11 @@ class DataError(Exception):
     pass
 
 
-class Wallet(object):
+class Wallet(QObject):
+    onNewTransaction = Signal(str, str, int)
+    
     def __init__(self,):
+        QObject.__init__(self)
         self.addresses = []
         self.balance = 0
         self.settings = Settings()
@@ -318,10 +321,11 @@ class Wallet(object):
                         tx.amount = transaction.amount
                         tx.date = transaction.date
                         return
+                self.onNewTransaction.emit(addr, transaction.address, transaction.amount)
                 address.transactions.append(transaction)
                 return
 
-    def getPrivKeyForAddress(self, addr, secondPassword=None):
+    def getPrivKeyFor Address(self, addr, secondPassword=None):
         '''Return private key for an address'''
         for address in self.addresses:
             if addr == address.addr:
@@ -437,15 +441,12 @@ class Wallet(object):
         except KeyError:
             print 'None tx in json data'
 
-    @Slot(unicode)
     def remove(self, addr):
         del self.addresses[self.getIndex(addr)]
 
-    @Slot(unicode)
     def getLabelForAddr(self, addr):
         return self.addresses[self.getIndex(addr)].label
 
-    @Slot(unicode, unicode)
     def setLabelForAddr(self, addr, label):
         self.addresses[self.getIndex(addr)].label = label
 
@@ -457,4 +458,4 @@ class Wallet(object):
         except:
             import traceback
             traceback.print_exc()
-            raise
+            raise 

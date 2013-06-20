@@ -58,6 +58,7 @@ class WalletController(QObject):
         self._fiatRate = 0
         self._fiatBalance = u'0 €'
         self._wallet = Wallet()
+        self._wallet.onNewTransaction.connect(self.notifyNewTx)
         self._walletUnlocked = False
         self.settings = Settings()
         self.addressesModel = AddressesModel()
@@ -77,6 +78,26 @@ class WalletController(QObject):
             self._currentPassKey = None
         self._currentAddressIndex = 0
 
+    def on_event_data_received(self,*args):
+        print 'BitPurse received DATA:', args
+    
+    
+#    def notifyCallback(self):
+#        print 'ohai! received something :)'
+#        self.service.remove_items()
+        
+    def notifyNewTx(self, address, datas, amount):
+        from eventfeed import EventFeedService, EventFeedItem
+        service = EventFeedService('BitPurse',
+                                   'BitPurse',
+                                   self.on_event_data_received)
+        item = EventFeedItem('/usr/share/icons/hicolor/80x80/apps/bitpurse.png',
+                             'BitPurse')
+        item.set_body('New transaction on address %s : %f BTC'
+                      % (address, amount / float(10**8)))
+        #item.set_custom_action(self.notifyCallback)
+        service.add_item(item)
+        
     @Slot(unicode)
     def newAddr(self, doubleKey):
         try:
@@ -406,7 +427,6 @@ class WalletController(QObject):
         data = getDataFromChainblock(req)
         self._fiatRate = data[self.settings.fiatCurrency]['15m']
         self._fiatSymbol = data[self.settings.fiatCurrency]['symbol']
-        print self._fiatRate, self._fiatSymbol
 
     def _update(self,):
         self.onBusy.emit()

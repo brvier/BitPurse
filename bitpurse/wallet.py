@@ -4,16 +4,16 @@
 # Copyright (c) 2012 Benoit HERVIER <khertan@khertan.net>
 # Licenced under GPLv3
 
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published
-## by the Free Software Foundation; version 3 only.
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published
+# by the Free Software Foundation; version 3 only.
 ##
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 
-from PySide.QtCore import Slot, Signal, QObject
+from PySide.QtCore import Signal, QObject
 from PySide.QtGui import QApplication
 import json
 from PBKDF2 import PBKDF2
@@ -40,7 +40,7 @@ class DataError(Exception):
 
 class Wallet(QObject):
     onNewTransaction = Signal(str, str, int)
-    
+
     def __init__(self,):
         QObject.__init__(self)
         self.addresses = []
@@ -83,7 +83,8 @@ class Wallet(QObject):
             payload = fh.read()
 
             payload = json.loads(self.decrypt(passKey,
-                                 payload.decode('base64', 'strict')))
+                                              payload.decode('base64',
+                                                             'strict')))
             self.settings.passKey = passKey
 
             self.addresses = [Address(jsondict=address)
@@ -321,7 +322,8 @@ class Wallet(QObject):
                         tx.amount = transaction.amount
                         tx.date = transaction.date
                         return
-                self.onNewTransaction.emit(addr, transaction.address, transaction.amount)
+                self.onNewTransaction.emit(
+                    addr, transaction.address, transaction.amount)
                 address.transactions.append(transaction)
                 return
 
@@ -381,7 +383,7 @@ class Wallet(QObject):
                + '?format=json&filter=0&offset=0'
                + '&active=%s&archived=%s'
                % ('|'.join(self.getActiveAddrAddresses()),
-               '|'.join(self.getArchivedAddrAddresses())))
+                  '|'.join(self.getArchivedAddrAddresses())))
 
         data = getDataFromChainblock(req)
         try:
@@ -433,7 +435,7 @@ class Wallet(QObject):
                                 tx['hash'],
                                 tx['time'],
                                 '\n'.join(list(set(txDst)
-                                .difference([txAddress, ]))),
+                                               .difference([txAddress, ]))),
                                 txAddresses[txAddress], confirmations))
 
                 except KeyError, err:
@@ -458,4 +460,4 @@ class Wallet(QObject):
         except:
             import traceback
             traceback.print_exc()
-            raise  
+            raise

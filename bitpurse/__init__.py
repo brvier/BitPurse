@@ -4,14 +4,14 @@
 # Copyright (c) 2012 Benoit HERVIER <khertan@khertan.net>
 # Licenced under GPLv3
 
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published
-## by the Free Software Foundation; version 3 only.
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published
+# by the Free Software Foundation; version 3 only.
 ##
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 
 from PySide.QtGui import QApplication
 from PySide.QtCore import QUrl, QObject
@@ -21,15 +21,10 @@ from walletcontroller import WalletController
 import sys
 import os
 import os.path
-# from dbusproxy import DBusProxy
-# from dbus.service import BusName
-# import python dbus GLib mainloop support
-# import dbus.mainloop.glib
-# dbus_main_loop = dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
 __author__ = 'Benoit HERVIER (Khertan)'
 __email__ = 'khertan@khertan.net'
-__version__ = '2.1.0'
+__version__ = '2.1.1'
 __build__ = '1'
 __upgrade__ = '''0.9.0: First beta release
 0.9.1: Second beta release, add missing python-crypto dependancy
@@ -58,11 +53,15 @@ __upgrade__ = '''0.9.0: First beta release
 2.0.2: Fix issue #4, avoid putting a change address with a null value
 2.0.3: Workarround to try to fix tracker index for shareui
 2.1.0: Fix a bug in storage of old transactions
-       Add event notification on new transaction'''
+       Add event notification on new transaction
+2.1.1: Fix security issue SSLv3 (CVE-2014-3566)
+       Lower minimal fee to 0.0001'''
 
 
 class BitPurse(QApplication):
+
     ''' Application class '''
+
     def __init__(self):
         QApplication.__init__(self, sys.argv)
         self.setOrganizationName("Khertan Software")
@@ -131,4 +130,4 @@ class BitPurse(QApplication):
         self.walletController.settings.numberOfLaunch += 1
 
 if __name__ == '__main__':
-    sys.exit(BitPurse().exec_())   
+    sys.exit(BitPurse().exec_())

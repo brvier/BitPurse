@@ -4,14 +4,14 @@
 # Copyright (c) 2012 Benoit HERVIER <khertan@khertan.net>
 # Licenced under GPLv3
 
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published
-## by the Free Software Foundation; version 3 only.
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published
+# by the Free Software Foundation; version 3 only.
 ##
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License
 
 
 from utils import \
@@ -36,6 +36,7 @@ class TransactionSubmitted(Exception):
 
 
 class Transaction(object):
+
     def __init__(self, from_addr, outputs, privKey, fee=None,
                  change_addr=None):
         if not change_addr:
@@ -58,9 +59,9 @@ class Transaction(object):
             raise TransactionError('Not enought funds, or transaction using'
                                    ' all inputs need to be confirmed')
 
-        if amount < 1000000 and fee < 50000:
+        if amount < 1000000 and fee < 10000:
             raise TransactionError("Not enought fee :"
-                                   " a fee of 0.0005 is required for"
+                                   " a fee of 0.0001 is required for"
                                    " small transactions")
 
         if change_amount != 0:
@@ -105,7 +106,7 @@ class Transaction(object):
                            unspent['tx_output_n'],
                            unspent['script'],
                            [(None,
-                           None)]))
+                             None)]))
         return inputs
 
     def signed_tx(self, inputs, outputs, privKey):
@@ -135,7 +136,7 @@ class Transaction(object):
                              p_pos,
                              p_scriptPubKey,
                              [(pubkey,
-                             sig)]))
+                               sig)]))
         return s_inputs
 
     def tx_filter(self, s):
@@ -182,7 +183,7 @@ class Transaction(object):
             elif for_sig == i:
                 if len(pubkeysig) > 1:
                     script = self.multisig_script(pubkeysig)  # p2sh uses the
-                                                              # inner script
+                    # inner script
                 else:
                     script = p_script                         # scriptsig
             else:

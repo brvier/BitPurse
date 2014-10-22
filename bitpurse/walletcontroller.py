@@ -78,26 +78,22 @@ class WalletController(QObject):
             self._currentPassKey = None
         self._currentAddressIndex = 0
 
-    def on_event_data_received(self,*args):
+    def on_event_data_received(self, *args):
         print 'BitPurse received DATA:', args
-    
-    
-#    def notifyCallback(self):
-#        print 'ohai! received something :)'
-#        self.service.remove_items()
-        
+
     def notifyNewTx(self, address, datas, amount):
         from eventfeed import EventFeedService, EventFeedItem
         service = EventFeedService('BitPurse',
                                    'BitPurse',
                                    self.on_event_data_received)
-        item = EventFeedItem('/usr/share/icons/hicolor/80x80/apps/bitpurse.png',
-                             'BitPurse')
+        item = EventFeedItem(
+            '/usr/share/icons/hicolor/80x80/apps/bitpurse.png',
+            'BitPurse')
         item.set_body('New transaction on address %s : %f BTC'
-                      % (address, amount / float(10**8)))
-        #item.set_custom_action(self.notifyCallback)
+                      % (address, amount / float(10 ** 8)))
+        # item.set_custom_action(self.notifyCallback)
         service.add_item(item)
-        
+
     @Slot(unicode)
     def newAddr(self, doubleKey):
         try:
@@ -218,10 +214,10 @@ class WalletController(QObject):
         # import urllib
         import shutil
         shutil.copyfile(os.path.join(os.path.expanduser('~'),
-                        '.bitpurse.wallet'),
+                                     '.bitpurse.wallet'),
                         os.path.join(os.path.expanduser('~'),
-                        'MyDocs',
-                        'bitpurse.wallet'))
+                                     'MyDocs',
+                                     'bitpurse.wallet'))
         bus = dbus.SessionBus()
         shareService = bus.get_object('com.nokia.ShareUi', '/')
         share = shareService.get_dbus_method(
@@ -356,7 +352,7 @@ class WalletController(QObject):
         try:
             Transaction(self.getCurrentAddress(),
                         [(dstAddr,
-                         int(decimal.Decimal(amout) * 100000000)), ],
+                          int(decimal.Decimal(amout) * 100000000)), ],
                         self._wallet.getPrivKeyForAddress(
                         self.getCurrentAddress(), secondPassword),
                         fee=int(decimal.Decimal(fee) * 100000000),
@@ -537,4 +533,4 @@ class WalletController(QObject):
     currentPassKey = Property(unicode,
                               getCurrentPassKey,
                               setCurrentPassKey,
-                              notify=onCurrentPassKey) 
+                              notify=onCurrentPassKey)

@@ -4,14 +4,14 @@
 # Copyright (c) 2012 Benoit HERVIER <khertan@khertan.net>
 # Licenced under GPLv3
 
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published
-## by the Free Software Foundation; version 3 only.
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published
+# by the Free Software Foundation; version 3 only.
 ##
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License
 
 import hashlib
 import ecdsa
@@ -98,6 +98,7 @@ def i2o_ECPublicKey(pubkey, compressed=False):
 
 
 class EC_KEY(object):
+
     def __init__(self, secret):
         self.pubkey = ecdsa.ecdsa.Public_key(generator_secp256k1,
                                              generator_secp256k1 * secret)
@@ -362,6 +363,7 @@ def is_valid(addr):
 
 
 class HTTPSConnectionV3(httplib.HTTPSConnection):
+
     def __init__(self, *args, **kwargs):
         httplib.HTTPSConnection.__init__(self, *args, **kwargs)
 
@@ -376,19 +378,14 @@ class HTTPSConnectionV3(httplib.HTTPSConnection):
             if self._tunnel_host:
                 self.sock = sock
                 self._tunnel()
-        try:
-            self.sock = ssl.wrap_socket(sock,
-                                        self.key_file,
-                                        self.cert_file,
-                                        ssl_version=ssl.PROTOCOL_SSLv3)
-        except ssl.SSLError:
-            self.sock = ssl.wrap_socket(sock,
-                                        self.key_file,
-                                        self.cert_file,
-                                        ssl_version=ssl.PROTOCOL_SSLv23)
+        self.sock = ssl.wrap_socket(sock,
+                                    self.key_file,
+                                    self.cert_file,
+                                    ssl_version=ssl.PROTOCOL_TLSv1)
 
 
 class HTTPSHandlerV3(urllib2.HTTPSHandler):
+
     def https_open(self, req):
         return self.do_open(HTTPSConnectionV3, req)
 

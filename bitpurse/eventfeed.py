@@ -46,11 +46,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 # When the user clicks on "Refresh", this signal gets sent via D-Bus:
-# signal sender=:1.8 -> dest=(null destination) serial=855 path=/eventfeed; interface=com.nokia.home.EventFeed; member=refreshRequested
+# signal sender=:1.8 -> dest=(null destination) serial=855 path=/eventfeed;
+# interface=com.nokia.home.EventFeed; member=refreshRequested
 # TODO: Implement support for receiving this signal
 
 # MRemoteAction::toString()
 # http://apidocs.meego.com/1.0/mtf/mremoteaction_8cpp_source.html
+
+
 def qvariant_encode(value):
     buffer = QBuffer()
     buffer.open(QIODevice.ReadWrite)
@@ -61,6 +64,8 @@ def qvariant_encode(value):
 
 # MRemoteAction::fromString()
 # http://apidocs.meego.com/1.0/mtf/mremoteaction_8cpp_source.html
+
+
 def qvariant_decode(data):
     byteArray = QByteArray.fromBase64(data)
     buffer = QBuffer(byteArray)
@@ -72,6 +77,7 @@ def qvariant_decode(data):
 
 
 class EventFeedItem(object):
+
     """One item that can be posted to the event feed"""
 
     def __init__(self, icon, title, timestamp=None):
@@ -79,7 +85,8 @@ class EventFeedItem(object):
 
         :param icon: Icon name or path to icon file (can be a URL)
         :param title: The title text describing this item
-        :param timestamp: datetime.datetime object when the item happened (optional)
+        :param timestamp: datetime.datetime object
+        when the item happened (optional)
         """
         if timestamp is None:
             timestamp = datetime.datetime.now()
@@ -140,7 +147,8 @@ class EventFeedService(dbus.service.Object):
     DEFAULT_PATH = '/EventFeedService'
     DEFAULT_INTF = 'com.thpinfo.meego.EventFeedService'
 
-    def __init__(self, source_name, source_display_name, on_data_received=None):
+    def __init__(self, source_name,
+                 source_display_name, on_data_received=None):
         """Create a new client to the event feed service
 
         :param source_name: SLUG for the application (used in the service name)
@@ -155,8 +163,8 @@ class EventFeedService(dbus.service.Object):
         bus_name = dbus.service.BusName(self.local_name, bus=session_bus)
 
         dbus.service.Object.__init__(self,
-                object_path=self.DEFAULT_PATH,
-                bus_name=bus_name)
+                                     object_path=self.DEFAULT_PATH,
+                                     bus_name=bus_name)
 
         self.next_action_id = 1
         self.actions = {}
@@ -186,7 +194,8 @@ class EventFeedService(dbus.service.Object):
         :param item: EventFeedItem to be displayed
         """
         if item.id != -1:
-            logger.debug('Message %d already shown - updating footer.', item.id)
+            logger.debug(
+                'Message %d already shown - updating footer.', item.id)
             self.update_item(item)
             return item.id
 
@@ -199,9 +208,9 @@ class EventFeedService(dbus.service.Object):
 
         if action is not None or action_data is not None:
             remote_action = [
-                    self.local_name,
-                    self.DEFAULT_PATH,
-                    self.DEFAULT_INTF,
+                self.local_name,
+                self.DEFAULT_PATH,
+                self.DEFAULT_INTF,
             ]
 
             if action is not None:
@@ -212,7 +221,7 @@ class EventFeedService(dbus.service.Object):
                     'ReceiveActionCallback',
                     qvariant_encode(action_id),
                 ])
-            else: # action_data is not None
+            else:  # action_data is not None
                 remote_action.append('ReceiveActionData')
                 remote_action.extend([qvariant_encode(x) for x in action_data])
 
@@ -245,4 +254,3 @@ class EventFeedService(dbus.service.Object):
         self.event_feed.removeItemsBySourceName(self.source_name)
         # No need to remember action IDs, because all items were removed
         self.actions = {}
-

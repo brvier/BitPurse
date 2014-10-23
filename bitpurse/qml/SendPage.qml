@@ -71,6 +71,15 @@ Page {
                 placeholderText: qsTr('Type BitCoin address')
                 anchors.right: parent.right
                 anchors.left: parent.left
+                onTextChanged: {
+                    console.log('test');
+                    console.log(addressField.text.substring(0, 8));
+                    if (addressField.text.substring(0, 8) == 'bitcoin:') {
+                        addressField.text = addressField.text.substring(9);
+                    } else if (addressField.text.substring(0, 10) == 'bitcoin://') {
+                        addressField.text = addressField.text.substring(11);
+                    }
+                }
             }
 
             Label {

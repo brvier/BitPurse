@@ -79,6 +79,10 @@ Page {
                     } else if (addressField.text.substring(0, 10) == 'bitcoin://') {
                         addressField.text = addressField.text.substring(11);
                     }
+                    var pos = addressField.text.indexOf('?');
+                    if (pos) {
+                        addressField.text = addressField.text.substring(0, pos);
+                    }
                 }
             }
 

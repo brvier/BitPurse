@@ -80,7 +80,7 @@ Page {
                         addressField.text = addressField.text.substring(11);
                     }
                     var pos = addressField.text.indexOf('?');
-                    if (pos) {
+                    if (pos >= 1) {
                         addressField.text = addressField.text.substring(0, pos);
                     }
                 }

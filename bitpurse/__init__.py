@@ -24,7 +24,7 @@ import os.path
 
 __author__ = 'Benoit HERVIER (Khertan)'
 __email__ = 'khertan@khertan.net'
-__version__ = '2.1.1'
+__version__ = '2.1.2'
 __build__ = '1'
 __upgrade__ = '''0.9.0: First beta release
 0.9.1: Second beta release, add missing python-crypto dependancy
@@ -55,13 +55,12 @@ __upgrade__ = '''0.9.0: First beta release
 2.1.0: Fix a bug in storage of old transactions
        Add event notification on new transaction
 2.1.1: Fix security issue SSLv3 (CVE-2014-3566)
-       Lower minimal fee to 0.0001'''
+       Lower minimal fee to 0.0001
+2.1.2: Fix for Blockchain API change'''
 
 
 class BitPurse(QApplication):
-
     ''' Application class '''
-
     def __init__(self):
         QApplication.__init__(self, sys.argv)
         self.setOrganizationName("Khertan Software")

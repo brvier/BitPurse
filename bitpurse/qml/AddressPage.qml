@@ -46,6 +46,11 @@ Page {
                 sourceSize.width: 128
                 sourceSize.height: 128
                 anchors.verticalCenter: parent.verticalCenter
+
+                MouseArea {
+                    anchors.fill: parent
+                    onPressed: {pageStack.push(sendPage, {});}
+                }
             }
         }
 

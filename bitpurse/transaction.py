@@ -98,7 +98,7 @@ class Transaction(object):
 
     def getInputs(self, addr):
         inputs = []
-        request = 'http://blockchain.info/unspent?address=%s' % addr
+        request = 'http://blockchain.info/unspent?active=%s' % addr
         for unspent in getDataFromChainblock(request)['unspent_outputs']:
             inputs.append((addr,
                            unspent['value'],
